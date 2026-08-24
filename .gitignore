@@ -1,0 +1,18 @@
+# dependencias
+node_modules/
+
+# variables de entorno (sensibles)
+.env
+.env.local
+.env.production
+
+# build output (generado)
+dist/
+
+# sistema operativo
+.DS_Store
+Thumbs.db
+
+# ide
+.vscode/
+.idea/

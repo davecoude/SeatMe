@@ -1,5 +1,6 @@
 # dependencias
 node_modules/
+apps/api/prisma/generated/
 
 # variables de entorno (sensibles)
 .env

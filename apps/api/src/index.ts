@@ -1,6 +1,8 @@
 import express, { Request, Response } from "express"
 import dotenv from "dotenv"
 import cors from "cors"
+import zoneRoutes from "./modules/zones/zone.routes.js"
+import deskRoutes from "./modules/desks/desks.routes.js"
 
 dotenv.config()
 
@@ -9,6 +11,8 @@ const PORT = process.env.PORT || 3000
 
 app.use(express.json())
 app.use(cors())
+app.use("/zones", zoneRoutes)
+app.use("/desks", deskRoutes)
 
 console.log(process.env.NODE_ENV)
 

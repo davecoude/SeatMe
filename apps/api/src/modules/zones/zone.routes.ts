@@ -1,12 +1,13 @@
 import { Router } from "express"
 import { handleCreateZone, handleGetAllZones, handleGetZoneById, handleUpdateZone, handleDeleteZone } from "./zone.controller.js"
+import { authenticate, authorize } from "../../middlewares/auth.middleware.js"
 
 const router = Router()
 
-router.post("/", handleCreateZone)
-router.get("/", handleGetAllZones)
-router.get("/:id", handleGetZoneById)
-router.patch("/:id", handleUpdateZone)
-router.delete("/:id", handleDeleteZone)
+router.post("/", authenticate, authorize(["ADMIN"]), handleCreateZone)
+router.get("/", authenticate, handleGetAllZones)
+router.get("/:id",authenticate, handleGetZoneById)
+router.patch("/:id", authenticate, authorize(["ADMIN"]), handleUpdateZone)
+router.delete("/:id", authenticate, authorize(["ADMIN"]), handleDeleteZone)
 
 export default router

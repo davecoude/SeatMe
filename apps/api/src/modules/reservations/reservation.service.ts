@@ -29,7 +29,7 @@ export async function createReservation(userId: string, deskId: string, date: st
   const isReservationOverlapping = await prisma.reservation.findFirst({
     where: {
       deskId: deskId,
-      date: new Date(date),
+      date: new Date(date + 'T12:00:00Z'),
       status: { notIn: ["CANCELLED","COMPLETED"] },
       AND: [
         { startTime: { lt: endTime } },
@@ -43,7 +43,7 @@ export async function createReservation(userId: string, deskId: string, date: st
   const hasUserReservation = await prisma.reservation.findFirst({
     where: {
       userId: userId,
-      date: new Date(date),
+      date: new Date(date + 'T12:00:00Z'),
       status: { notIn: ["CANCELLED", "COMPLETED"] },
       AND: [
         { startTime: { lt: endTime } },
@@ -59,7 +59,7 @@ export async function createReservation(userId: string, deskId: string, date: st
     data: {
       userId,
       deskId,
-      date: new Date(date),
+      date: new Date(date + 'T12:00:00Z'),
       startTime,
       endTime,
       status: "PENDING"
@@ -193,7 +193,7 @@ export async function getReservationByDesk(deskId: string, date: string) {
   const reservations = await prisma.reservation.findMany({
     where: {
       deskId,
-      date: new Date(date),
+      date: new Date(date  + 'T12:00:00Z'),
       status: { notIn: ["CANCELLED"] }
     },
     include: { user: { select: { id: true, firstName: true, lastName: true }}}

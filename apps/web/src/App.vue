@@ -1,9 +1,22 @@
 <script setup lang="ts">
-  import { RouterView } from 'vue-router'
+  import { computed } from 'vue'
+  import { RouterView, useRoute } from 'vue-router'
+  import AppNavbar from '@/components/layout/AppNavbar.vue'
+  import AppToast from '@/components/layout/AppToast.vue'
+
+  const route = useRoute()
+
+  const showNavBar = computed(() => {
+    const publicRoutes = ['login', 'register']
+    return !publicRoutes.includes(route.name as string)
+  })
+  
 </script>
 
 <template>
+  <AppNavbar v-if="showNavBar" />
   <RouterView />
+  <AppToast />
 </template>
 
 <style scoped></style>

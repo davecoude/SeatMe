@@ -32,7 +32,7 @@ export async function handleRegister(req: Request, res: Response) {
 export async function handleLogin(req: Request, res: Response) {
   try {
     const { email, password } = req.body
-    const token = login(email, password)
+    const token = await login(email, password)
     res.status(200).json({ token })
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Error en login"

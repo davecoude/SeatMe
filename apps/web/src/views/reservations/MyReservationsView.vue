@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
   import { ref, onMounted } from 'vue'
   import { fetchMyReservations, checkInReservation, cancelReservation } from '@/services/reservations'
   import { useToast } from '@/composables/useToast'
@@ -29,6 +28,14 @@
     await loadReservations()
   })
 
+  /**
+   * Carga las reservas pertenecientes al usuario autenticado.
+   *
+   * Actualiza el estado de carga mientras se realiza la petición y
+   * muestra una notificación si ocurre un error.
+   *
+   * @returns Una promesa que se resuelve cuando las reservas han sido cargadas.
+   */
   async function loadReservations() {
     try {
       loading.value = true
@@ -40,6 +47,14 @@
     }
   }
 
+  /**
+   * Realiza el check-in de una reserva.
+   *
+   * Después de registrar el check-in, actualiza la lista de reservas
+   * para reflejar el nuevo estado.
+   *
+   * @param id - Identificador de la reserva.
+   */
   async function handleCheckIn(id: string) {
     try {
       await checkInReservation(id)
@@ -50,6 +65,14 @@
     }
   }
 
+  /**
+   * Cancela una reserva.
+   *
+   * Después de cancelar la reserva, actualiza la lista de reservas
+   * para reflejar el nuevo estado.
+   *
+   * @param id - Identificador de la reserva que se desea cancelar.
+   */
   async function handleCancel(id: string) {
     try {
       await cancelReservation(id)
@@ -60,6 +83,13 @@
     }
   }
 
+    /**
+     * Obtiene las clases CSS correspondientes al estado de una reserva.
+     *
+     * @param status - Estado actual de la reserva.
+     *
+     * @returns Clases CSS utilizadas para representar visualmente el estado.
+     */
   function getStatusColor(status: string) {
     switch (status) {
       case 'PENDING': return 'bg-yellow-100 text-yellow-800'
@@ -71,6 +101,13 @@
     }
   }
 
+  /**
+   * Obtiene la etiqueta en español correspondiente al estado de una reserva.
+   *
+   * @param status - Estado actual de la reserva.
+   *
+   * @returns Texto descriptivo del estado de la reserva.
+   */
   function getStatusLabel(status: string) {
     switch (status) {
       case 'PENDING': return 'Pendiente'
@@ -82,6 +119,14 @@
     }
   }
 
+  /**
+   * Formatea una fecha para mostrarla en formato localizado de Colombia.
+   *
+   * @param dateStr - Fecha en formato de cadena.
+   *
+   * @returns Fecha formateada en español con día de la semana, año,
+   *          mes y día.
+   */
   function formatDate(dateStr: string) {
     const date = new Date(dateStr)
     return date.toLocaleDateString('es-CO', {

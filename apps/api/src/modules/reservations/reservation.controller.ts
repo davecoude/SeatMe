@@ -8,7 +8,8 @@ import { createReservation,
   confirmReservation,
   checkInReservation,
   completedReservation,
-  cancelReservation } from "./reservation.service.js"
+  cancelReservation,
+  getAllReservations } from "./reservation.service.js"
 
 /**
  * Crea una nueva reservación para el usuario autenticado.
@@ -270,5 +271,23 @@ export async function handleCancelReservation(req: Request, res: Response) {
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Error para cancelar reserva"
     res.status(400).json({ error: msg })
+  }
+}
+
+/**
+
+Obtiene todas las reservas registradas en el sistema.
+@param req - Objeto Request de Express.
+@param res - Objeto Response de Express.
+@returns Promise<void> - Envía las reservas en formato JSON.
+@response 200 - Lista de reservas obtenida correctamente.
+@response 500 - Error al obtener las reservas.
+*/
+export async function handleGetAllReservations(req: Request, res: Response) {
+  try {
+    const reservations = await getAllReservations()
+    res.status(200).json(reservations)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener reservas'})
   }
 }

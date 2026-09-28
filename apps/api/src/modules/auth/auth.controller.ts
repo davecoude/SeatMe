@@ -1,5 +1,7 @@
 import { Request, Response } from "express"
 import { register, login } from "./auth.service.js"
+import { ZodError } from "zod"
+import { RegisterSchema, LoginSchema } from "./auth.schema.js"
 
 /**
  * Maneja el registro de un nuevo usuario.
@@ -11,11 +13,15 @@ import { register, login } from "./auth.service.js"
  */
 export async function handleRegister(req: Request, res: Response) {
   try {
-    const { email, password, firstName, lastName } = req.body
-    const user = await register(email, password, firstName, lastName)
+    const data = RegisterSchema.parse(req.body)
+    const user = await register(data.email, data.password, data.firstName, data.lastName)
     res.status(201).json(user)
     
   } catch (error) {
+    if(error instanceof ZodError) {
+      res.status(400).json({ error: error.issues[0].message })
+      return
+    }
     const msg = error instanceof Error ? error.message : "Error en registro"
     res.status(400).json({ error: msg })
   }
@@ -31,10 +37,14 @@ export async function handleRegister(req: Request, res: Response) {
  */
 export async function handleLogin(req: Request, res: Response) {
   try {
-    const { email, password } = req.body
-    const token = await login(email, password)
+    const data = LoginSchema.parse(req.body)
+    const token = await login(data.email, data.password)
     res.status(200).json({ token })
   } catch (error) {
+    if(error instanceof ZodError) {
+      res.status(400).json({ error: error.issues[0].message })
+      return
+    }
     const msg = error instanceof Error ? error.message : "Error en login"
     res.status(401).json({ error: msg })
   }

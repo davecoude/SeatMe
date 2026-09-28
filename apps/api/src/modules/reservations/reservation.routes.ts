@@ -7,13 +7,15 @@ import { handleCreateReservation,
   handleConfirmReservation,
   handleCheckInReservation,
   handleCompletedReservation,
-  handleCancelReservation } from "./reservation.controller.js"
+  handleCancelReservation,
+  handleGetAllReservations } from "./reservation.controller.js"
 
 const router = Router()
 
 router.post("/", authenticate, handleCreateReservation)
 router.get("/my", authenticate, handleGetReservationByUser)
 router.get("/desk/:deskId", authenticate, handleGetReservationByDesk)
+router.get("/all", authenticate, authorize(["ADMIN"]), handleGetAllReservations)
 router.get("/:id", authenticate, handleGetReservationById)
 router.patch("/:id/confirm", authenticate, authorize(["ADMIN"]), handleConfirmReservation)
 router.patch("/:id/check-in", authenticate, handleCheckInReservation)

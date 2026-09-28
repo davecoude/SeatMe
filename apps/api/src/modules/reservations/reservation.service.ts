@@ -221,3 +221,21 @@ export async function getReservationById(reservationId: string) {
 
   return reservation
 }
+
+/**
+ * Obtiene todas las reservas del sistema (solo admin).
+ * Incluye datos del usuario, desk y zona.
+ *
+ * @returns Lista completa de reservas con relaciones
+ */
+export async function getAllReservations() {
+  const reservations = await prisma.reservation.findMany({
+    include: {
+      user: { select: { id: true, firstName: true, lastName: true, email: true } },
+      desk: { include: { zone: true } }
+    },
+    orderBy: { createdAt: 'desc' }
+  })
+  
+  return reservations
+}

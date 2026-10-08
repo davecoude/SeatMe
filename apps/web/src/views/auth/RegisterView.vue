@@ -29,7 +29,8 @@ function validate(): boolean {
 
   if (!firstName.value.trim()) errors.value.firstName = 'Nombre requerido'
   if (!lastName.value.trim()) errors.value.lastName = 'Apellido requerido'
-  if (!email.value.includes('@') || !email.value.includes('.')) errors.value.email = 'Email inválido'
+  if (!email.value.includes('@') || !email.value.includes('.'))
+    errors.value.email = 'Email inválido'
   if (password.value.length < 8) {
     errors.value.password = 'Mínimo 8 caracteres'
   } else if (!/[A-Z]/.test(password.value)) {
@@ -61,7 +62,9 @@ async function handleRegister() {
 <template>
   <div class="min-h-screen grid lg:grid-cols-2">
     <!-- Formulario -->
-    <div class="auth-form flex items-center justify-center px-6 py-12 bg-gray-50 order-2 lg:order-1">
+    <div
+      class="auth-form flex items-center justify-center px-6 py-12 bg-gray-50 order-2 lg:order-1"
+    >
       <div class="w-full max-w-md">
         <div class="mb-8">
           <RouterLink to="/" class="text-2xl font-bold text-primary-700">SeatMe</RouterLink>
@@ -69,7 +72,10 @@ async function handleRegister() {
           <p class="mt-2 text-sm text-gray-500">Regístrate para empezar a reservar tu espacio</p>
         </div>
 
-        <div v-if="error" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+        <div
+          v-if="error"
+          class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
+        >
           {{ error }}
         </div>
 
@@ -82,11 +88,13 @@ async function handleRegister() {
                 type="text"
                 :class="[
                   'w-full px-4 py-2.5 bg-white border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors',
-                  errors.firstName ? 'border-red-400' : 'border-gray-300'
+                  errors.firstName ? 'border-red-400' : 'border-gray-300',
                 ]"
                 placeholder="John"
               />
-              <p v-if="errors.firstName" class="mt-1 text-xs text-red-600">{{ errors.firstName }}</p>
+              <p v-if="errors.firstName" class="mt-1 text-xs text-red-600">
+                {{ errors.firstName }}
+              </p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1.5">Apellido</label>
@@ -95,7 +103,7 @@ async function handleRegister() {
                 type="text"
                 :class="[
                   'w-full px-4 py-2.5 bg-white border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors',
-                  errors.lastName ? 'border-red-400' : 'border-gray-300'
+                  errors.lastName ? 'border-red-400' : 'border-gray-300',
                 ]"
                 placeholder="Doe"
               />
@@ -110,7 +118,7 @@ async function handleRegister() {
               type="email"
               :class="[
                 'w-full px-4 py-2.5 bg-white border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors',
-                errors.email ? 'border-red-400' : 'border-gray-300'
+                errors.email ? 'border-red-400' : 'border-gray-300',
               ]"
               placeholder="tu@email.com"
             />
@@ -124,12 +132,14 @@ async function handleRegister() {
               type="password"
               :class="[
                 'w-full px-4 py-2.5 bg-white border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors',
-                errors.password ? 'border-red-400' : 'border-gray-300'
+                errors.password ? 'border-red-400' : 'border-gray-300',
               ]"
               placeholder="••••••••"
             />
             <p v-if="errors.password" class="mt-1 text-xs text-red-600">{{ errors.password }}</p>
-            <p v-else class="mt-1 text-xs text-gray-400">Mínimo 8 caracteres, una mayúscula y un número</p>
+            <p v-else class="mt-1 text-xs text-gray-400">
+              Mínimo 8 caracteres, una mayúscula y un número
+            </p>
           </div>
 
           <button
@@ -147,7 +157,10 @@ async function handleRegister() {
 
         <p class="mt-6 text-center text-sm text-gray-500">
           ¿Ya tienes cuenta?
-          <RouterLink to="/login" class="text-primary-700 font-medium hover:text-primary-800 transition-colors">
+          <RouterLink
+            to="/login"
+            class="text-primary-700 font-medium hover:text-primary-800 transition-colors"
+          >
             Inicia sesión
           </RouterLink>
         </p>

@@ -1,29 +1,49 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
-  import { useRouter } from 'vue-router';
-  import { useAuthStore } from '@/stores/auth';
-  import { LayoutDashboard, CalendarDays, Map, Monitor, ClipboardList, LogOut, Menu, X } from 'lucide-vue-next'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import {
+  LayoutDashboard,
+  CalendarDays,
+  Map,
+  Monitor,
+  ClipboardList,
+  LogOut,
+  Menu,
+  X,
+} from 'lucide-vue-next'
 
-  const route = useRouter()
-  const auth = useAuthStore()
-  const mobileOpen = ref(false)
+const route = useRouter()
+const auth = useAuthStore()
+const mobileOpen = ref(false)
 
-  /**
-   * Cierra la sesión del usuario y redirige a la página de inicio de sesión.
-   * Ejecuta el método logout() del servicio de autenticación para
-   * finalizar la sesión actual y, posteriormente, redirige al usuario
-   * a la ruta de inicio de sesión.
-   * @returns void
-  */
-  function handleLogout() {
-    auth.logout()
-    route.push('/')
-  }
+/**
+ * Cierra la sesión del usuario y redirige a la página de inicio de sesión.
+ * Ejecuta el método logout() del servicio de autenticación para
+ * finalizar la sesión actual y, posteriormente, redirige al usuario
+ * a la ruta de inicio de sesión.
+ * @returns void
+ */
+function handleLogout() {
+  auth.logout()
+  route.push('/')
+}
 
-  function navigate(path: string) {
-    mobileOpen.value = false
-    route.push(path)
-  }
+/**
+ * Navega a una ruta específica y cierra el menú móvil.
+ *
+ * Se utiliza para centralizar la navegación desde elementos de la interfaz
+ * que también requieren cerrar el menú responsive antes de cambiar de vista.
+ *
+ * @param path - Ruta de destino a la que se navegará.
+ *
+ * @example
+ * navigate('/dashboard')
+ */
+function navigate(path: string) {
+  mobileOpen.value = false
+  route.push(path)
+}
 </script>
 
 <template>
@@ -113,9 +133,11 @@
     <div v-if="mobileOpen" class="md:hidden border-t border-gray-100 bg-white px-6 py-4 space-y-1">
       <div v-if="auth.user" class="px-3 py-2 mb-2 border-b border-gray-100">
         <p class="text-sm font-medium text-gray-900">{{ auth.user.firstName }}</p>
-        <p class="text-xs text-gray-500">{{ auth.user.role === 'ADMIN' ? 'Administrador' : 'Miembro' }}</p>
+        <p class="text-xs text-gray-500">
+          {{ auth.user.role === 'ADMIN' ? 'Administrador' : 'Miembro' }}
+        </p>
       </div>
-      
+
       <button
         @click="navigate('/dashboard')"
         class="flex items-center gap-3 w-full px-3 py-2.5 text-sm font-medium text-gray-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"

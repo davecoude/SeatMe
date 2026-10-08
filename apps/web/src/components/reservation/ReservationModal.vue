@@ -20,6 +20,17 @@ const endTime = ref('')
 const error = ref('')
 const loading = ref(false)
 
+/**
+ * Gestiona el envío del formulario de creación de una reserva.
+ *
+ * Activa el estado de carga, limpia errores previos y solicita la creación
+ * de la reserva con los datos seleccionados por el usuario. Si la operación
+ * es exitosa, emite el evento `success` para notificar al componente padre.
+ *
+ * En caso de error, muestra el mensaje devuelto por la API o un mensaje
+ * genérico como alternativa. El estado de carga se desactiva siempre,
+ * independientemente de que la operación sea exitosa o falle.
+ */
 async function handleSubmit() {
   try {
     loading.value = true
@@ -29,7 +40,7 @@ async function handleSubmit() {
       deskId: props.deskId,
       date: date.value,
       startTime: startTime.value,
-      endTime: endTime.value
+      endTime: endTime.value,
     })
 
     emit('success')
@@ -49,12 +60,18 @@ async function handleSubmit() {
           <h2 class="text-lg font-bold text-gray-900">Reservar escritorio</h2>
           <p class="text-sm text-gray-500 mt-0.5">Puesto {{ deskCode }}</p>
         </div>
-        <button @click="emit('close')" class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+        <button
+          @click="emit('close')"
+          class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+        >
           <X class="w-5 h-5" />
         </button>
       </div>
 
-      <div v-if="error" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+      <div
+        v-if="error"
+        class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
+      >
         {{ error }}
       </div>
 

@@ -18,14 +18,14 @@ import { z } from 'zod'
  */
 export const RegisterSchema = z.object({
   email: z.string().email('Email invalido'),
-  password: z.string()
+  password: z
+    .string()
     .min(8, 'La contraseña debe contener al menos 8 caracteres')
     .regex(/[A-Z]/, 'Debe contener al menos una mayuscula')
     .regex(/[0-9]/, 'Debe contener al menos un numero'),
   firstName: z.string().min(1, 'Nombre requerido'),
-  lastName: z.string().min(1, 'Apellido requerido')
+  lastName: z.string().min(1, 'Apellido requerido'),
 })
-
 
 /**
  * Esquema de validación para el inicio de sesión de un usuario.
@@ -43,7 +43,7 @@ export const RegisterSchema = z.object({
  */
 export const LoginSchema = z.object({
   email: z.string().email('Email invalido'),
-  password: z.string().min(1, 'Contraseña requerida')
+  password: z.string().min(1, 'Contraseña requerida'),
 })
 
 export type RegisterInput = z.infer<typeof RegisterSchema>

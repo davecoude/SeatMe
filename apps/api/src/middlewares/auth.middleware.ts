@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express"
-import jwt from "jsonwebtoken"
+import { Request, Response, NextFunction } from 'express'
+import jwt from 'jsonwebtoken'
 
 declare global {
   namespace Express {
@@ -23,19 +23,18 @@ declare global {
  * @param next - Función para continuar al siguiente middleware/controller
  */
 export function authenticate(req: Request, res: Response, next: NextFunction) {
-
   const authHeader = req.headers.authorization
 
-  if(!authHeader || !authHeader.startsWith("Bearer ")) {
-    res.status(401).json({ error: "Token no proporcionado"})
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'Token no proporcionado' })
     return
   }
 
-  const token = authHeader.split(" ")[1]
+  const token = authHeader.split(' ')[1]
   const secret = process.env.JWT_SECRET
 
-  if(!secret) {
-    res.status(500).json({ error: "JWT_SECRET no configurado" })
+  if (!secret) {
+    res.status(500).json({ error: 'JWT_SECRET no configurado' })
     return
   }
 
@@ -44,16 +43,14 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
 
     req.user = {
       userId: payload.userId,
-      role: payload.role
+      role: payload.role,
     }
 
     next()
-
   } catch (error) {
-    res.status(401).json({ error: "Token invalido o expirado"})
+    res.status(401).json({ error: 'Token invalido o expirado' })
   }
 }
-
 
 /**
  * Middleware de autorización por rol.
@@ -68,16 +65,14 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
  * router.post("/", authenticate, authorize(["ADMIN"]), handleCreateZone)
  */
 export function authorize(roles: string[]) {
-
   return (req: Request, res: Response, next: NextFunction) => {
-
-    if(!req.user) {
-      res.status(401).json({ error: "No autenticado"})
+    if (!req.user) {
+      res.status(401).json({ error: 'No autenticado' })
       return
     }
 
-    if(!roles.includes(req.user.role)) {
-      res.status(403).json({ error: "No tiene permiso para esta accion"})
+    if (!roles.includes(req.user.role)) {
+      res.status(403).json({ error: 'No tiene permiso para esta accion' })
       return
     }
 

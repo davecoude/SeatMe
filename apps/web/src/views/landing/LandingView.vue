@@ -2,7 +2,15 @@
 import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import gsap from 'gsap'
-import { Monitor, CalendarCheck, Shield, ChevronRight, Clock, UserCheck, Laptop } from 'lucide-vue-next'
+import {
+  Monitor,
+  CalendarCheck,
+  Shield,
+  ChevronRight,
+  Clock,
+  UserCheck,
+  Laptop,
+} from 'lucide-vue-next'
 
 const heroRef = ref<HTMLElement | null>(null)
 const featuresRef = ref<HTMLElement | null>(null)
@@ -11,9 +19,21 @@ const ctaRef = ref<HTMLElement | null>(null)
 
 onMounted(() => {
   gsap.from('.hero-title', { autoAlpha: 0, y: 30, duration: 0.8, ease: 'power3.out' })
-  gsap.from('.hero-subtitle', { autoAlpha: 0, y: 20, duration: 0.8, delay: 0.2, ease: 'power3.out' })
+  gsap.from('.hero-subtitle', {
+    autoAlpha: 0,
+    y: 20,
+    duration: 0.8,
+    delay: 0.2,
+    ease: 'power3.out',
+  })
   gsap.from('.hero-cta', { autoAlpha: 0, y: 20, duration: 0.8, delay: 0.4, ease: 'power3.out' })
-  gsap.from('.hero-image', { autoAlpha: 0, scale: 0.95, duration: 1, delay: 0.3, ease: 'power3.out' })
+  gsap.from('.hero-image', {
+    autoAlpha: 0,
+    scale: 0.95,
+    duration: 1,
+    delay: 0.3,
+    ease: 'power3.out',
+  })
 
   gsap.from('.feature-card', {
     autoAlpha: 0,
@@ -21,7 +41,7 @@ onMounted(() => {
     duration: 0.6,
     stagger: 0.15,
     ease: 'power3.out',
-    scrollTrigger: featuresRef.value
+    scrollTrigger: featuresRef.value,
   })
 
   gsap.from('.step-item', {
@@ -30,14 +50,13 @@ onMounted(() => {
     duration: 0.6,
     stagger: 0.2,
     delay: 0.5,
-    ease: 'power3.out'
+    ease: 'power3.out',
   })
 })
 </script>
 
 <template>
   <div class="bg-white">
-
     <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-sm border-b border-gray-100 z-50">
       <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <span class="text-xl font-bold text-primary-700">SeatMe</span>
@@ -66,7 +85,8 @@ onMounted(() => {
             <span class="text-primary-700">empieza aquí</span>
           </h1>
           <p class="hero-subtitle mt-6 text-lg text-gray-500 leading-relaxed max-w-lg">
-            Reserva tu escritorio ideal en segundos. Consulta disponibilidad en tiempo real, elige tu zona y trabaja donde mejor te funcione.
+            Reserva tu escritorio ideal en segundos. Consulta disponibilidad en tiempo real, elige
+            tu zona y trabaja donde mejor te funcione.
           </p>
           <div class="hero-cta mt-8 flex items-center gap-4">
             <RouterLink
@@ -97,14 +117,19 @@ onMounted(() => {
     <section ref="featuresRef" class="py-20 px-6 bg-gray-50">
       <div class="max-w-6xl mx-auto">
         <div class="text-center mb-14">
-          <h2 class="text-3xl font-bold text-gray-900">Todo lo que necesitas para trabajar mejor</h2>
+          <h2 class="text-3xl font-bold text-gray-900">
+            Todo lo que necesitas para trabajar mejor
+          </h2>
           <p class="mt-3 text-gray-500 max-w-2xl mx-auto">
-            SeatMe simplifica la gestión de espacios de trabajo compartidos para equipos y profesionales independientes.
+            SeatMe simplifica la gestión de espacios de trabajo compartidos para equipos y
+            profesionales independientes.
           </p>
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div class="feature-card bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div
+            class="feature-card bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+          >
             <div class="w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center mb-4">
               <CalendarCheck class="w-5 h-5 text-primary-700" />
             </div>
@@ -114,7 +139,9 @@ onMounted(() => {
             </p>
           </div>
 
-          <div class="feature-card bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div
+            class="feature-card bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+          >
             <div class="w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center mb-4">
               <Monitor class="w-5 h-5 text-primary-700" />
             </div>
@@ -124,7 +151,9 @@ onMounted(() => {
             </p>
           </div>
 
-          <div class="feature-card bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div
+            class="feature-card bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+          >
             <div class="w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center mb-4">
               <Shield class="w-5 h-5 text-primary-700" />
             </div>
@@ -134,7 +163,9 @@ onMounted(() => {
             </p>
           </div>
 
-          <div class="feature-card bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div
+            class="feature-card bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+          >
             <div class="w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center mb-4">
               <Laptop class="w-5 h-5 text-primary-700" />
             </div>
@@ -154,31 +185,39 @@ onMounted(() => {
 
           <div class="space-y-8">
             <div class="step-item flex items-start gap-4">
-              <div class="w-10 h-10 bg-primary-700 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">
+              <div
+                class="w-10 h-10 bg-primary-700 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0"
+              >
                 1
               </div>
               <div>
                 <h3 class="font-bold text-gray-900 mb-1">Elige tu zona y escritorio</h3>
                 <p class="text-sm text-gray-500 leading-relaxed">
-                  Navega por las zonas del coworking y selecciona el puesto que mejor se adapte a tu jornada.
+                  Navega por las zonas del coworking y selecciona el puesto que mejor se adapte a tu
+                  jornada.
                 </p>
               </div>
             </div>
 
             <div class="step-item flex items-start gap-4">
-              <div class="w-10 h-10 bg-primary-700 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">
+              <div
+                class="w-10 h-10 bg-primary-700 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0"
+              >
                 2
               </div>
               <div>
                 <h3 class="font-bold text-gray-900 mb-1">Selecciona fecha y horario</h3>
                 <p class="text-sm text-gray-500 leading-relaxed">
-                  Escoge el día y la franja horaria. El sistema valida disponibilidad en tiempo real.
+                  Escoge el día y la franja horaria. El sistema valida disponibilidad en tiempo
+                  real.
                 </p>
               </div>
             </div>
 
             <div class="step-item flex items-start gap-4">
-              <div class="w-10 h-10 bg-primary-700 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">
+              <div
+                class="w-10 h-10 bg-primary-700 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0"
+              >
                 3
               </div>
               <div>
@@ -223,12 +262,15 @@ onMounted(() => {
       <div class="max-w-6xl mx-auto flex items-center justify-between">
         <span class="text-sm text-gray-500">© 2026 SeatMe. Todos los derechos reservados.</span>
         <div class="flex items-center gap-6">
-          <a href="#" class="text-sm text-gray-500 hover:text-primary-700 transition-colors">Términos</a>
-          <a href="#" class="text-sm text-gray-500 hover:text-primary-700 transition-colors">Privacidad</a>
+          <a href="#" class="text-sm text-gray-500 hover:text-primary-700 transition-colors"
+            >Términos</a
+          >
+          <a href="#" class="text-sm text-gray-500 hover:text-primary-700 transition-colors"
+            >Privacidad</a
+          >
         </div>
       </div>
     </footer>
-
   </div>
 </template>
 

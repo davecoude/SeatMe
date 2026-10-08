@@ -1,4 +1,4 @@
-import api from "./api"
+import api from './api'
 
 /**
  * Obtiene todos los escritorios registrados en el sistema.
@@ -6,7 +6,7 @@ import api from "./api"
  * @returns Lista de escritorios.
  */
 export async function fetchDesks() {
-  const response = await api.get("/desks")
+  const response = await api.get('/desks')
   return response.data
 }
 
@@ -35,11 +35,11 @@ export async function fetchDeskAmenities(deskId: string) {
  * @returns Los datos del escritorio creado.
  */
 export async function createDesk(data: {
-  code: string;
-  zoneId: string;
-  status: 'AVAILABLE' | 'MAINTENANCE';
-  posX: number;
-  posY: number;
+  code: string
+  zoneId: string
+  status: 'AVAILABLE' | 'MAINTENANCE'
+  posX: number
+  posY: number
 }) {
   const response = await api.post('/desks', data)
   return response.data
@@ -58,13 +58,16 @@ export async function createDesk(data: {
  *
  * @returns Los datos del escritorio actualizado.
  */
-export async function updateDesk(id: string, data: Partial<{
-  code: string;
-  zoneId: string;
-  status: 'AVAILABLE' | 'MAINTENANCE';
-  posX: number;
-  posY: number;
-}>) {
+export async function updateDesk(
+  id: string,
+  data: Partial<{
+    code: string
+    zoneId: string
+    status: 'AVAILABLE' | 'MAINTENANCE'
+    posX: number
+    posY: number
+  }>,
+) {
   const response = await api.patch(`/desks/${id}`, data)
   return response.data
 }

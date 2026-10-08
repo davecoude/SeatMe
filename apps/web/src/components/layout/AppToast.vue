@@ -5,10 +5,14 @@ const { toasts } = useToast()
 
 function getToastClasses(type: string) {
   switch (type) {
-    case 'success': return 'bg-green-600 text-white'
-    case 'error': return 'bg-red-600 text-white'
-    case 'warning': return 'bg-yellow-500 text-white'
-    default: return 'bg-gray-800 text-white'
+    case 'success':
+      return 'bg-green-600 text-white'
+    case 'error':
+      return 'bg-red-600 text-white'
+    case 'warning':
+      return 'bg-yellow-500 text-white'
+    default:
+      return 'bg-gray-800 text-white'
   }
 }
 </script>
@@ -19,10 +23,7 @@ function getToastClasses(type: string) {
       <div
         v-for="toast in toasts"
         :key="toast.id"
-        :class="[
-          'px-5 py-3 rounded-lg shadow-lg text-sm font-medium',
-          getToastClasses(toast.type)
-        ]"
+        :class="['px-5 py-3 rounded-lg shadow-lg text-sm font-medium', getToastClasses(toast.type)]"
       >
         {{ toast.message }}
       </div>

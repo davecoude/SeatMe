@@ -1,26 +1,22 @@
-import { prisma } from "../../config/database.js"
+import { prisma } from '../../config/database.js'
 
 /**
  * Crea un registro para la tabla Zone con los campos definidos
- * 
+ *
  * @param data - datos de la zona a crear
  * @param data.name - nombre identificador de la zona
  * @param data.description - descripcion opcional de la zona
  * @param data.floor - numero de piso donde su ubica la zona
  * @returns la zona creada con su ID generado
  */
-export async function createZone(data: {
-  name: string
-  description?: string
-  floor: number
-}) {
+export async function createZone(data: { name: string; description?: string; floor: number }) {
   const zone = await prisma.zone.create({ data })
   return zone
 }
 
 /**
  * Trae todos los registros de la tabla Zone
- * 
+ *
  * @returns todos los registros de zonas
  */
 export async function getAllZones() {
@@ -30,8 +26,8 @@ export async function getAllZones() {
 
 /**
  * Buscar por un campo unico
- * 
- * @param id - campo identificador para buscar el registro 
+ *
+ * @param id - campo identificador para buscar el registro
  * @returns el registro encontrado con su respectivo id
  */
 export async function getZoneById(id: string) {
@@ -41,7 +37,7 @@ export async function getZoneById(id: string) {
 
 /**
  * Actualizar una zona existente
- * 
+ *
  * @param id - identificador que actualiza el registro
  * @param data - datos de la zona opcionales
  * @param data.name - nombre de la zona
@@ -51,7 +47,7 @@ export async function getZoneById(id: string) {
  */
 export async function updateZone(
   id: string,
-  data: Partial<{name: string, description: string, floor: number}>
+  data: Partial<{ name: string; description: string; floor: number }>,
 ) {
   const zone = prisma.zone.update({ where: { id }, data })
   return zone
@@ -59,7 +55,7 @@ export async function updateZone(
 
 /**
  * Eliminar un registro segun id
- * 
+ *
  * @param id - identificador de la zona
  * @returns devuelve el registro de zona eliminado
  */

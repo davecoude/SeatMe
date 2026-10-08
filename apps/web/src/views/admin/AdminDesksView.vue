@@ -39,9 +39,16 @@ const form = ref<Omit<Desk, 'id'>>({
   zoneId: '',
   status: 'AVAILABLE',
   posX: 0,
-  posY: 0
+  posY: 0,
 })
 
+/**
+ * Inicializa los datos necesarios para mostrar la gestión de escritorios.
+ *
+ * Carga los escritorios y las zonas disponibles, activa el estado de carga
+ * durante el proceso y ejecuta la animación de entrada de las tarjetas una
+ * vez actualizado el DOM. Si ocurre un error, muestra una notificación al usuario.
+ */
 onMounted(async () => {
   try {
     loading.value = true
@@ -49,9 +56,10 @@ onMounted(async () => {
     zones.value = await fetchZones()
 
     await nextTick()
-    gsap.fromTo('.desk-card',
+    gsap.fromTo(
+      '.desk-card',
       { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: 'power3.out' }
+      { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: 'power3.out' },
     )
   } catch {
     toast.error('Error al cargar datos')
@@ -61,35 +69,55 @@ onMounted(async () => {
 })
 
 const filteredDesks = computed(() => {
-  if(selectedZone.value === 'all') return desks.value
-  return desks.value.filter(desk => desk.zoneId === selectedZone.value)
+  if (selectedZone.value === 'all') return desks.value
+  return desks.value.filter((desk) => desk.zoneId === selectedZone.value)
 })
 
+/**
+ * Recarga la lista de escritorios y aplica la animación de entrada
+ * después de que el DOM haya sido actualizado.
+ */
 async function loadDesks() {
   try {
     desks.value = await fetchDesks()
 
     await nextTick()
-    gsap.fromTo('.desk-card',
+    gsap.fromTo(
+      '.desk-card',
       { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: 'power3.out' }
+      { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: 'power3.out' },
     )
   } catch {
     toast.error('Error al cargar escritorios')
   }
 }
 
+/**
+ * Obtiene el nombre de la zona asociada a un escritorio.
+ *
+ * @param zoneId - Identificador de la zona que se desea buscar.
+ * @returns Nombre de la zona o "Sin zona" si no existe una coincidencia.
+ */
 function getZoneName(zoneId: string) {
-  const zone = zones.value.find(z => z.id === zoneId)
+  const zone = zones.value.find((z) => z.id === zoneId)
   return zone ? zone.name : 'Sin zona'
 }
 
+/**
+ * Prepara el formulario para crear un nuevo escritorio y abre el modal.
+ */
 function openCreateModal() {
   editingDesk.value = null
   form.value = { code: '', zoneId: '', status: 'AVAILABLE', posX: 0, posY: 0 }
   showModal.value = true
 }
 
+/**
+ * Prepara el formulario con los datos del escritorio seleccionado
+ * y abre el modal en modo edición.
+ *
+ * @param desk - Escritorio cuyos datos serán cargados en el formulario.
+ */
 function openEditModal(desk: Desk) {
   editingDesk.value = desk
   form.value = {
@@ -97,11 +125,19 @@ function openEditModal(desk: Desk) {
     zoneId: desk.zoneId,
     status: desk.status,
     posX: desk.posX,
-    posY: desk.posY
+    posY: desk.posY,
   }
   showModal.value = true
 }
 
+/**
+ * Gestiona la creación o actualización de un escritorio según el modo
+ * actual del formulario.
+ *
+ * Si existe un escritorio en edición, lo actualiza; de lo contrario,
+ * crea uno nuevo. Después de completar la operación, cierra el modal
+ * y recarga la lista de escritorios.
+ */
 async function handleSubmit() {
   try {
     submitting.value = true
@@ -121,6 +157,11 @@ async function handleSubmit() {
   }
 }
 
+/**
+ * Elimina un escritorio después de solicitar confirmación al usuario.
+ *
+ * @param desk - Escritorio que se desea eliminar.
+ */
 async function handleDelete(desk: Desk) {
   if (!confirm(`¿Eliminar el escritorio "${desk.code}"?`)) return
 
@@ -137,7 +178,6 @@ async function handleDelete(desk: Desk) {
 <template>
   <div class="pt-16 min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto px-6 py-8">
-
       <div class="flex items-center justify-between mb-8">
         <div>
           <h1 class="text-3xl font-bold text-gray-900">Escritorios</h1>
@@ -160,7 +200,7 @@ async function handleDelete(desk: Desk) {
             'px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all',
             selectedZone === 'all'
               ? 'bg-primary-700 text-white'
-              : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300 hover:text-primary-700'
+              : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300 hover:text-primary-700',
           ]"
         >
           Todas
@@ -173,7 +213,7 @@ async function handleDelete(desk: Desk) {
             'px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all',
             selectedZone === zone.id
               ? 'bg-primary-700 text-white'
-              : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300 hover:text-primary-700'
+              : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300 hover:text-primary-700',
           ]"
         >
           {{ zone.name }}
@@ -203,7 +243,7 @@ async function handleDelete(desk: Desk) {
                   'text-xs font-medium px-2.5 py-1 rounded-full',
                   desk.status === 'AVAILABLE'
                     ? 'bg-green-100 text-green-800'
-                    : 'bg-gray-200 text-gray-600'
+                    : 'bg-gray-200 text-gray-600',
                 ]"
               >
                 {{ desk.status === 'AVAILABLE' ? 'Disponible' : 'Mantenimiento' }}
@@ -234,13 +274,19 @@ async function handleDelete(desk: Desk) {
       </div>
 
       <!-- Modal -->
-      <div v-if="showModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+      <div
+        v-if="showModal"
+        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4"
+      >
         <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
           <div class="flex items-center justify-between mb-6">
             <h2 class="text-lg font-bold text-gray-900">
               {{ editingDesk ? 'Editar Escritorio' : 'Nuevo Escritorio' }}
             </h2>
-            <button @click="showModal = false" class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              @click="showModal = false"
+              class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            >
               <X class="w-5 h-5" />
             </button>
           </div>

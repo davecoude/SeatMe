@@ -1,5 +1,5 @@
-import { DeskStatus } from "../../../prisma/generated/prisma/client.js"
-import { prisma } from "../../config/database.js"
+import { DeskStatus } from '../../../prisma/generated/prisma/client.js'
+import { prisma } from '../../config/database.js'
 
 /**
  * Crea un nuevo puesto de trabajo en el coworking.
@@ -19,7 +19,7 @@ export async function createDesk(data: {
   posX: number
   posY: number
 }) {
-  const desk = await prisma.desk.create({data})
+  const desk = await prisma.desk.create({ data })
   return desk
 }
 
@@ -31,7 +31,7 @@ export async function createDesk(data: {
  */
 export async function getAllDesks() {
   const desks = await prisma.desk.findMany({
-    include: { zone: true }
+    include: { zone: true },
   })
   return desks
 }
@@ -44,7 +44,7 @@ export async function getAllDesks() {
  * @returns El puesto encontrado con su zona, o null si no existe
  */
 export async function getDeskById(id: string) {
-  const desk = await prisma.desk.findUnique({ where: { id }, include: { zone: true }})
+  const desk = await prisma.desk.findUnique({ where: { id }, include: { zone: true } })
   return desk
 }
 
@@ -63,9 +63,9 @@ export async function getDeskById(id: string) {
  */
 export async function updateDesk(
   id: string,
-  data: Partial<{ code: string, zoneId: string, status: DeskStatus, posX: number, posY: number }>) {
-
-  const desk = await prisma.desk.update({ where: { id }, data})
+  data: Partial<{ code: string; zoneId: string; status: DeskStatus; posX: number; posY: number }>,
+) {
+  const desk = await prisma.desk.update({ where: { id }, data })
   return desk
 }
 
@@ -77,6 +77,6 @@ export async function updateDesk(
  * @throws Error si el puesto no existe o tiene reservas asociadas
  */
 export async function deleteDesk(id: string) {
-  const desk = await prisma.desk.delete({ where: { id }})
+  const desk = await prisma.desk.delete({ where: { id } })
   return desk
 }

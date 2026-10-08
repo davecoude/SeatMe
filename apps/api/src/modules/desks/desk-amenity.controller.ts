@@ -1,6 +1,5 @@
-import { Request, Response } from "express"
-import { createDeskAmenity, getDeskAmenity, deleteDeskAmenity } from "./desk-amenity.service.js"
-
+import { Request, Response } from 'express'
+import { createDeskAmenity, getDeskAmenity, deleteDeskAmenity } from './desk-amenity.service.js'
 
 /**
  * Asigna un amenity a un puesto de trabajo.
@@ -13,20 +12,19 @@ export async function handleCreateDeskAmenity(req: Request, res: Response) {
   try {
     const { deskId, amenityId } = req.params
 
-    if(typeof deskId !== "string") {
-      res.status(400).json({ error: "deskId invalido"})
+    if (typeof deskId !== 'string') {
+      res.status(400).json({ error: 'deskId invalido' })
       return
     }
-    if(typeof amenityId !== "string") {
-      res.status(400).json({ error: "amenityId invalido"})
+    if (typeof amenityId !== 'string') {
+      res.status(400).json({ error: 'amenityId invalido' })
       return
     }
 
     const deskAmenity = await createDeskAmenity(deskId, amenityId)
     res.status(201).json(deskAmenity)
-
   } catch (error) {
-    res.status(500).json({ error: "Error al crear relacion deskAmenity"})
+    res.status(500).json({ error: 'Error al crear relacion deskAmenity' })
   }
 }
 
@@ -41,18 +39,17 @@ export async function handleGetDeskAmenity(req: Request, res: Response) {
   try {
     const { deskId } = req.params
 
-    if(typeof deskId !== "string") {
-      res.status(400).json({ error: "ID invalido"})
+    if (typeof deskId !== 'string') {
+      res.status(400).json({ error: 'ID invalido' })
       return
     }
 
     const deskAmenity = await getDeskAmenity(deskId)
     res.status(200).json(deskAmenity)
-    
   } catch (error) {
-    res.status(500).json({ error: "Error al obtener deskAmenity"})
+    res.status(500).json({ error: 'Error al obtener deskAmenity' })
   }
-} 
+}
 
 /**
  * Elimina la asignación de un amenity a un puesto.
@@ -63,24 +60,21 @@ export async function handleGetDeskAmenity(req: Request, res: Response) {
  */
 export async function handleDeleteDeskAmenity(req: Request, res: Response) {
   try {
-
     const { deskId, amenityId } = req.params
 
-    if(typeof deskId !== "string") {
-      res.status(400).json({ error: "deskId invalido"})
+    if (typeof deskId !== 'string') {
+      res.status(400).json({ error: 'deskId invalido' })
       return
     }
-    if(typeof amenityId !== "string") {
-      res.status(400).json({ error: "amenityId invalido"})
+    if (typeof amenityId !== 'string') {
+      res.status(400).json({ error: 'amenityId invalido' })
       return
     }
 
-    await deleteDeskAmenity(deskId, amenityId) 
+    await deleteDeskAmenity(deskId, amenityId)
 
     res.status(204).send()
-
-    
   } catch (error) {
-    res.status(500).json({ error: "Error al eliminar deskAmenity"})
+    res.status(500).json({ error: 'Error al eliminar deskAmenity' })
   }
 }

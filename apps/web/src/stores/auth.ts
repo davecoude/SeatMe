@@ -1,6 +1,6 @@
-import { ref, computed } from "vue"
-import { defineStore } from "pinia"
-import api from "@/services/api"
+import { ref, computed } from 'vue'
+import { defineStore } from 'pinia'
+import api from '@/services/api'
 
 /**
  * Decodifica el payload de un token JWT.
@@ -22,31 +22,30 @@ function decodeToken(token: string) {
   }
 }
 
-export const useAuthStore = defineStore("auth", () => {
-
-  const token = ref<string | null>(localStorage.getItem("token"))
+export const useAuthStore = defineStore('auth', () => {
+  const token = ref<string | null>(localStorage.getItem('token'))
   const user = ref<any>(decodeToken(token.value || ''))
 
   const isAuthenticated = computed(() => !!token.value)
-  const isAdmin = computed(() => user.value?.role === "ADMIN")
+  const isAdmin = computed(() => user.value?.role === 'ADMIN')
   const userRole = computed(() => user.value?.role || null)
 
   async function login(email: string, password: string) {
-    const response = await api.post("/auth/login", { email, password })
+    const response = await api.post('/auth/login', { email, password })
     token.value = response.data.token
     user.value = decodeToken(response.data.token)
-    localStorage.setItem("token", response.data.token)
+    localStorage.setItem('token', response.data.token)
   }
 
   async function register(email: string, password: string, firstName: string, lastName: string) {
-    const response = await api.post("/auth/register", { email, password, firstName, lastName })
+    const response = await api.post('/auth/register', { email, password, firstName, lastName })
     return response
   }
 
   function logout() {
     token.value = null
     user.value = null
-    localStorage.removeItem("token")
+    localStorage.removeItem('token')
   }
 
   return { token, user, isAuthenticated, isAdmin, userRole, login, register, logout }

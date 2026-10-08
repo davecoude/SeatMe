@@ -1,4 +1,4 @@
-import api from "./api"
+import api from './api'
 
 /**
  * Crea una nueva reserva de escritorio.
@@ -11,8 +11,13 @@ import api from "./api"
  *
  * @returns Los datos de la reserva creada.
  */
-export async function createReservation(data: { deskId: string, date: string, startTime: string, endTime: string }) {
-  const response = await api.post("/reservations", data)
+export async function createReservation(data: {
+  deskId: string
+  date: string
+  startTime: string
+  endTime: string
+}) {
+  const response = await api.post('/reservations', data)
   return response.data
 }
 
@@ -22,7 +27,7 @@ export async function createReservation(data: { deskId: string, date: string, st
  * @returns Lista de reservas pertenecientes al usuario autenticado.
  */
 export async function fetchMyReservations() {
-  const response =  await api.get("/reservations/my")
+  const response = await api.get('/reservations/my')
   return response.data
 }
 
@@ -93,6 +98,6 @@ export async function confirmReservation(id: string) {
  * @returns Los datos de la reserva después de marcarla como completada.
  */
 export async function completeReservation(id: string) {
-  const response =  await api.patch(`/reservations/${id}/complete`)
+  const response = await api.patch(`/reservations/${id}/complete`)
   return response.data
 }

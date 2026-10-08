@@ -1,21 +1,21 @@
-import axios from "axios"
+import axios from 'axios'
 /**
  * Configuracion cliente HTTP
  */
 const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: 'http://localhost:3000',
   headers: {
-    "Content-Type": "application/json"
-  }
+    'Content-Type': 'application/json',
+  },
 })
 
 /**
  * Interceptor
  */
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem('token')
 
-  if(token) {
+  if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
 

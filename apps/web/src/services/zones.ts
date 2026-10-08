@@ -1,4 +1,4 @@
-import api from "./api"
+import api from './api'
 
 /**
  * Obtiene todas las zonas registradas en el sistema.
@@ -6,7 +6,7 @@ import api from "./api"
  * @returns Lista de zonas.
  */
 export async function fetchZones() {
-  const response = await api.get("/zones")
+  const response = await api.get('/zones')
   return response.data
 }
 
@@ -36,7 +36,10 @@ export async function createZone(data: { name: string; description?: string; flo
  *
  * @returns Los datos de la zona actualizada.
  */
-export async function updateZone(id: string, data: Partial<{ name: string; description: string; floor: number }>) {
+export async function updateZone(
+  id: string,
+  data: Partial<{ name: string; description: string; floor: number }>,
+) {
   const response = await api.patch(`/zones/${id}`, data)
   return response.data
 }

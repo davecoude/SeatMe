@@ -14,7 +14,7 @@ onMounted(() => {
       rotation: 360,
       duration: 1,
       repeat: -1,
-      ease: 'none'
+      ease: 'none',
     })
   }
 })
@@ -22,16 +22,13 @@ onMounted(() => {
 const sizeClasses: Record<string, string> = {
   sm: 'w-4 h-4 border-2',
   md: 'w-6 h-6 border-2',
-  lg: 'w-10 h-10 border-3'
+  lg: 'w-10 h-10 border-3',
 }
 </script>
 
 <template>
   <div
     ref="spinnerRef"
-    :class="[
-      'rounded-full border-primary-300 border-t-primary-700',
-      sizeClasses[size || 'md']
-    ]"
+    :class="['rounded-full border-primary-300 border-t-primary-700', sizeClasses[size || 'md']]"
   />
 </template>

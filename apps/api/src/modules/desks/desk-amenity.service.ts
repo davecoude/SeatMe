@@ -1,5 +1,4 @@
-import { prisma } from "../../config/database.js"
-
+import { prisma } from '../../config/database.js'
 
 /**
  * Asigna un amenity a un puesto de trabajo.
@@ -10,12 +9,12 @@ import { prisma } from "../../config/database.js"
  * @returns La relación creada con ambos IDs
  * @throws Error si el desk o amenity no existen, o si la relación ya existe
  */
-export async function createDeskAmenity( deskId: string, amenityId: string) {
+export async function createDeskAmenity(deskId: string, amenityId: string) {
   const deskAmenity = await prisma.deskAmenity.create({
     data: {
       deskId: deskId,
-      amenityId: amenityId
-    }
+      amenityId: amenityId,
+    },
   })
 
   return deskAmenity
@@ -31,7 +30,7 @@ export async function createDeskAmenity( deskId: string, amenityId: string) {
 export async function getDeskAmenity(id: string) {
   const deskAmenities = await prisma.deskAmenity.findMany({
     where: { deskId: id },
-    include: { amenity: true }
+    include: { amenity: true },
   })
 
   return deskAmenities
@@ -47,14 +46,13 @@ export async function getDeskAmenity(id: string) {
  * @throws Error si la relación no existe
  */
 export async function deleteDeskAmenity(deskId: string, amenityId: string) {
-
   const deskAmenity = await prisma.deskAmenity.delete({
     where: {
       deskId_amenityId: {
         deskId: deskId,
-        amenityId: amenityId
-      }
-    }
+        amenityId: amenityId,
+      },
+    },
   })
 
   return deskAmenity

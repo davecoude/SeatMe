@@ -1,7 +1,6 @@
-import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
-import { prisma } from "../../config/database.js"
-
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import { prisma } from '../../config/database.js'
 
 /**
  * Registra un nuevo usuario en el sistema.
@@ -18,8 +17,12 @@ import { prisma } from "../../config/database.js"
  *
  * @throws Error Si ocurre un error durante la creación del usuario.
  */
-export async function register(email: string, password: string, firstName: string, lastName: string) {
-
+export async function register(
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string,
+) {
   const hashedPassword = await bcrypt.hash(password, 10)
   const user = await prisma.user.create({
     data: {
@@ -27,14 +30,13 @@ export async function register(email: string, password: string, firstName: strin
       password: hashedPassword,
       firstName: firstName,
       lastName: lastName,
-      role: "MEMBER",
-    }
+      role: 'MEMBER',
+    },
   })
-    
-    const { password: _, ...userWithoutPassword } = user
-    return userWithoutPassword
-}
 
+  const { password: _, ...userWithoutPassword } = user
+  return userWithoutPassword
+}
 
 /**
  * Autentica un usuario mediante sus credenciales y genera un token JWT.
@@ -54,24 +56,21 @@ export async function register(email: string, password: string, firstName: strin
  * @throws Error Si la variable de entorno `JWT_EXPIRES_IN` no está configurada.
  */
 export async function login(email: string, password: string) {
-  
-  const user = await prisma.user.findUnique({ where: { email }})
-  if(!user) throw new Error("Usuario no encontrado")
+  const user = await prisma.user.findUnique({ where: { email } })
+  if (!user) throw new Error('Usuario no encontrado')
 
   const isMatch = await bcrypt.compare(password, user.password)
-  if(!isMatch) throw new Error("Password no coincide")
+  if (!isMatch) throw new Error('Password no coincide')
 
   const secret = process.env.JWT_SECRET
-  if(!secret) throw new Error("JWT_SECRET no configurado")
+  if (!secret) throw new Error('JWT_SECRET no configurado')
 
   const expiresIn = process.env.JWT_EXPIRES_IN
-  if(!expiresIn) throw new Error("JWT_EXPIRES_IN no configurado")
+  if (!expiresIn) throw new Error('JWT_EXPIRES_IN no configurado')
 
-  const token = jwt.sign(
-    { userId: user.id, role: user.role, firstName: user.firstName },
-    secret,
-    { expiresIn: expiresIn as jwt.SignOptions["expiresIn"] }
-  )
+  const token = jwt.sign({ userId: user.id, role: user.role, firstName: user.firstName }, secret, {
+    expiresIn: expiresIn as jwt.SignOptions['expiresIn'],
+  })
 
   return token
 }

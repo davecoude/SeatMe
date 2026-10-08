@@ -1,4 +1,4 @@
-import { prisma } from "../../config/database.js"
+import { prisma } from '../../config/database.js'
 
 /**
  * Crea un nuevo amenity en el sistema.
@@ -8,10 +8,7 @@ import { prisma } from "../../config/database.js"
  * @param data.icon - Identificador del ícono para renderizado en frontend
  * @returns El amenity creado con su ID generado
  */
-export async function createAmenity(data: {
-  name: string,
-  icon: string
-}) {
+export async function createAmenity(data: { name: string; icon: string }) {
   const amenity = await prisma.amenity.create({ data })
   return amenity
 }
@@ -33,8 +30,8 @@ export async function getAllAmenities() {
  * @returns El amenity encontrado, o null si no existe
  */
 export async function getAmenityById(id: string) {
-  const amenity = await prisma.amenity.findUnique({ where: { id }})
-  return amenity 
+  const amenity = await prisma.amenity.findUnique({ where: { id } })
+  return amenity
 }
 
 /**
@@ -47,7 +44,7 @@ export async function getAmenityById(id: string) {
  * @returns El amenity actualizado
  * @throws Error si el amenity no existe
  */
-export async function updateAmenity(id: string, data: Partial<{ name: string, icon: string}>) {
+export async function updateAmenity(id: string, data: Partial<{ name: string; icon: string }>) {
   const updatedAmenity = await prisma.amenity.update({ where: { id }, data })
   return updatedAmenity
 }
@@ -60,6 +57,6 @@ export async function updateAmenity(id: string, data: Partial<{ name: string, ic
  * @throws Error si el amenity no existe o tiene relaciones con desks
  */
 export async function deleteAmenity(id: string) {
-  const deletedAmenity = await prisma.amenity.delete({ where: { id }})
+  const deletedAmenity = await prisma.amenity.delete({ where: { id } })
   return deletedAmenity
 }

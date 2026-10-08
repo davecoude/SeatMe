@@ -60,7 +60,10 @@ async function handleLogin() {
           <p class="mt-2 text-sm text-gray-500">Ingresa tus credenciales para acceder</p>
         </div>
 
-        <div v-if="error" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+        <div
+          v-if="error"
+          class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
+        >
           {{ error }}
         </div>
 
@@ -100,7 +103,10 @@ async function handleLogin() {
 
         <p class="mt-6 text-center text-sm text-gray-500">
           ¿No tienes cuenta?
-          <RouterLink to="/register" class="text-primary-700 font-medium hover:text-primary-800 transition-colors">
+          <RouterLink
+            to="/register"
+            class="text-primary-700 font-medium hover:text-primary-800 transition-colors"
+          >
             Regístrate
           </RouterLink>
         </p>

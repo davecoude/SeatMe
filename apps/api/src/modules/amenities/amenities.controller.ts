@@ -1,6 +1,11 @@
-import { Request, Response } from "express"
-import { createAmenity, getAllAmenities, getAmenityById, updateAmenity, deleteAmenity } from "./amenities.service.js"
-
+import { Request, Response } from 'express'
+import {
+  createAmenity,
+  getAllAmenities,
+  getAmenityById,
+  updateAmenity,
+  deleteAmenity,
+} from './amenities.service.js'
 
 /**
  * Maneja la creación de un nuevo amenity.
@@ -13,12 +18,10 @@ export async function handleCreateAmenity(req: Request, res: Response) {
   try {
     const amenity = await createAmenity(req.body)
     res.status(201).json(amenity)
-
   } catch (error) {
-    res.status(500).json({ error: "Error al crear amenity" })
+    res.status(500).json({ error: 'Error al crear amenity' })
   }
 }
-
 
 /**
  * Devuelve todos los amenities registrados.
@@ -31,9 +34,8 @@ export async function handleGetAllAmenities(req: Request, res: Response) {
   try {
     const amenities = await getAllAmenities()
     res.status(200).json(amenities)
-
   } catch (error) {
-    res.status(500).json({ error: "Error al obtener los amenities"})
+    res.status(500).json({ error: 'Error al obtener los amenities' })
   }
 }
 
@@ -48,26 +50,23 @@ export async function handleGetAmenityById(req: Request, res: Response) {
   try {
     const { id } = req.params
 
-    if(typeof id !== "string") {
-      res.status(400).json({ error: "ID invalido" })
+    if (typeof id !== 'string') {
+      res.status(400).json({ error: 'ID invalido' })
       return
     }
 
     const amenity = await getAmenityById(id)
 
-    if(!amenity) {
-      res.status(404).json({ error: "Amenity no encontrado" })
+    if (!amenity) {
+      res.status(404).json({ error: 'Amenity no encontrado' })
       return
     }
 
     res.status(200).json(amenity)
-
-    
   } catch (error) {
-    res.status(500).json({ error: "Error al obtener amenity" })
+    res.status(500).json({ error: 'Error al obtener amenity' })
   }
 }
-
 
 /**
  * Actualiza parcialmente un amenity existente.
@@ -80,16 +79,15 @@ export async function handleUpdateAmenity(req: Request, res: Response) {
   try {
     const { id } = req.params
 
-    if(typeof id !== "string") {
-      res.status(400).json({ error: "ID invalido" })
+    if (typeof id !== 'string') {
+      res.status(400).json({ error: 'ID invalido' })
       return
     }
 
     const updatedAmenity = await updateAmenity(id, req.body)
     res.status(200).json(updatedAmenity)
-
   } catch (error) {
-    res.status(500).json({ error: "Error al actualizar amenity"})
+    res.status(500).json({ error: 'Error al actualizar amenity' })
   }
 }
 
@@ -104,15 +102,14 @@ export async function handleDeleteAmenity(req: Request, res: Response) {
   try {
     const { id } = req.params
 
-    if(typeof id !== "string") {
-      res.status(400).json({ error: "ID invalido" })
+    if (typeof id !== 'string') {
+      res.status(400).json({ error: 'ID invalido' })
       return
     }
 
     await deleteAmenity(id)
     res.status(204).send()
-
   } catch (error) {
-    res.status(500).json({ error: "Error al eliminar el amenity" })
+    res.status(500).json({ error: 'Error al eliminar el amenity' })
   }
 }

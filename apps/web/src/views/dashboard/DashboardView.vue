@@ -49,19 +49,19 @@ onMounted(async () => {
 
 const filteredDesks = computed(() => {
   if (!selectedZone.value) return []
-  return desks.value.filter(desk => desk.zoneId === selectedZone.value)
+  return desks.value.filter((desk) => desk.zoneId === selectedZone.value)
 })
 
 const currentZone = computed(() => {
-  return zones.value.find(z => z.id === selectedZone.value) || null
+  return zones.value.find((z) => z.id === selectedZone.value) || null
 })
 
 const availableCount = computed(() => {
-  return filteredDesks.value.filter(d => d.status === 'AVAILABLE').length
+  return filteredDesks.value.filter((d) => d.status === 'AVAILABLE').length
 })
 
 const maintenanceCount = computed(() => {
-  return filteredDesks.value.filter(d => d.status === 'MAINTENANCE').length
+  return filteredDesks.value.filter((d) => d.status === 'MAINTENANCE').length
 })
 
 async function selectZone(zoneId: string) {
@@ -69,9 +69,10 @@ async function selectZone(zoneId: string) {
 
   await nextTick()
 
-  gsap.fromTo('.desk-card',
+  gsap.fromTo(
+    '.desk-card',
     { opacity: 0, y: 20 },
-    { opacity: 1, y: 0, duration: 0, stagger: 0.05, ease: 'power3.out' }
+    { opacity: 1, y: 0, duration: 0, stagger: 0.05, ease: 'power3.out' },
   )
 }
 
@@ -96,7 +97,6 @@ function getMosaicClass(index: number): string {
 <template>
   <div class="pt-16 min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto px-6 py-8">
-
       <!-- Header -->
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
@@ -119,7 +119,7 @@ function getMosaicClass(index: number): string {
               'flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all',
               selectedZone === zone.id
                 ? 'bg-primary-700 text-white shadow-sm'
-                : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300 hover:text-primary-700'
+                : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300 hover:text-primary-700',
             ]"
           >
             <MapPin class="w-4 h-4" />
@@ -127,9 +127,7 @@ function getMosaicClass(index: number): string {
             <span
               :class="[
                 'text-xs px-1.5 py-0.5 rounded-full',
-                selectedZone === zone.id
-                  ? 'bg-white/20 text-white'
-                  : 'bg-gray-100 text-gray-500'
+                selectedZone === zone.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500',
               ]"
             >
               Piso {{ zone.floor }}
@@ -138,10 +136,15 @@ function getMosaicClass(index: number): string {
         </div>
 
         <!-- Zone info bar -->
-        <div v-if="currentZone" class="bg-white rounded-xl border border-gray-200 p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div
+          v-if="currentZone"
+          class="bg-white rounded-xl border border-gray-200 p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+        >
           <div>
             <h2 class="font-bold text-gray-900">{{ currentZone.name }}</h2>
-            <p v-if="currentZone.description" class="text-sm text-gray-500 mt-0.5">{{ currentZone.description }}</p>
+            <p v-if="currentZone.description" class="text-sm text-gray-500 mt-0.5">
+              {{ currentZone.description }}
+            </p>
           </div>
           <div class="flex items-center gap-4 text-sm">
             <span class="flex items-center gap-1.5 text-green-700">
@@ -166,7 +169,7 @@ function getMosaicClass(index: number): string {
               getMosaicClass(index),
               desk.status === 'AVAILABLE'
                 ? 'bg-white border-gray-200 hover:border-primary-500 hover:shadow-md cursor-pointer'
-                : 'bg-gray-100 border-gray-200 cursor-not-allowed'
+                : 'bg-gray-100 border-gray-200 cursor-not-allowed',
             ]"
           >
             <div class="flex items-start justify-between">
@@ -176,7 +179,7 @@ function getMosaicClass(index: number): string {
                   'text-xs font-medium px-2 py-1 rounded-full',
                   desk.status === 'AVAILABLE'
                     ? 'bg-green-100 text-green-800'
-                    : 'bg-gray-200 text-gray-600'
+                    : 'bg-gray-200 text-gray-600',
                 ]"
               >
                 {{ desk.status === 'AVAILABLE' ? 'Disponible' : 'Mantenimiento' }}
@@ -185,13 +188,18 @@ function getMosaicClass(index: number): string {
             <div class="flex items-center gap-1.5 text-gray-400">
               <Monitor v-if="desk.status === 'AVAILABLE'" class="w-4 h-4" />
               <AlertTriangle v-else class="w-4 h-4" />
-              <span class="text-xs">{{ desk.status === 'AVAILABLE' ? 'Clic para reservar' : 'No disponible' }}</span>
+              <span class="text-xs">{{
+                desk.status === 'AVAILABLE' ? 'Clic para reservar' : 'No disponible'
+              }}</span>
             </div>
           </div>
         </div>
 
         <!-- Empty state -->
-        <div v-if="filteredDesks.length === 0 && selectedZone" class="text-center py-16 text-gray-500">
+        <div
+          v-if="filteredDesks.length === 0 && selectedZone"
+          class="text-center py-16 text-gray-500"
+        >
           <Monitor class="w-10 h-10 mx-auto mb-3 text-gray-300" />
           <p class="font-medium">No hay escritorios en esta zona</p>
         </div>

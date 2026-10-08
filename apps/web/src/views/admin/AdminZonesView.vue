@@ -26,15 +26,23 @@ onMounted(async () => {
   await loadZones()
 })
 
+/**
+ * Carga las zonas disponibles y aplica la animación de entrada a las tarjetas
+ * una vez actualizado el DOM.
+ *
+ * Gestiona el estado de carga durante la operación y muestra una notificación
+ * si ocurre un error al obtener las zonas.
+ */
 async function loadZones() {
   try {
     loading.value = true
     zones.value = await fetchZones()
 
     await nextTick()
-    gsap.fromTo('.zone-card',
+    gsap.fromTo(
+      '.zone-card',
       { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.4, stagger: 0.08, ease: 'power3.out' }
+      { opacity: 1, y: 0, duration: 0.4, stagger: 0.08, ease: 'power3.out' },
     )
   } catch {
     toast.error('Error al cargar zonas')
@@ -43,22 +51,38 @@ async function loadZones() {
   }
 }
 
+/**
+ * Prepara el formulario para crear una nueva zona y abre el modal.
+ */
 function openCreateModal() {
   editingZone.value = null
   form.value = { name: '', description: '', floor: 1 }
   showModal.value = true
 }
 
+/**
+ * Prepara el formulario con los datos de la zona seleccionada
+ * y abre el modal en modo edición.
+ *
+ * @param zone - Zona cuyos datos serán cargados en el formulario.
+ */
 function openEditModal(zone: Zone) {
   editingZone.value = zone
   form.value = {
     name: zone.name,
     description: zone.description || '',
-    floor: zone.floor
+    floor: zone.floor,
   }
   showModal.value = true
 }
 
+/**
+ * Gestiona la creación o actualización de una zona según el modo actual
+ * del formulario.
+ *
+ * Después de completar la operación, cierra el modal y recarga la lista
+ * para reflejar los cambios realizados.
+ */
 async function handleSubmit() {
   try {
     submitting.value = true
@@ -78,6 +102,11 @@ async function handleSubmit() {
   }
 }
 
+/**
+ * Elimina una zona después de solicitar confirmación al usuario.
+ *
+ * @param zone - Zona que se desea eliminar.
+ */
 async function handleDelete(zone: Zone) {
   if (!confirm(`¿Eliminar la zona "${zone.name}"?`)) return
 
@@ -94,7 +123,6 @@ async function handleDelete(zone: Zone) {
 <template>
   <div class="pt-16 min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto px-6 py-8">
-
       <div class="flex items-center justify-between mb-8">
         <div>
           <h1 class="text-3xl font-bold text-gray-900">Zonas</h1>
@@ -160,13 +188,19 @@ async function handleDelete(zone: Zone) {
       </div>
 
       <!-- Modal -->
-      <div v-if="showModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+      <div
+        v-if="showModal"
+        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4"
+      >
         <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
           <div class="flex items-center justify-between mb-6">
             <h2 class="text-lg font-bold text-gray-900">
               {{ editingZone ? 'Editar Zona' : 'Nueva Zona' }}
             </h2>
-            <button @click="showModal = false" class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              @click="showModal = false"
+              class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            >
               <X class="w-5 h-5" />
             </button>
           </div>

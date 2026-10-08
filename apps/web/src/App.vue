@@ -7,7 +7,7 @@
   const route = useRoute()
 
   const showNavBar = computed(() => {
-    const publicRoutes = ['login', 'register']
+    const publicRoutes = ['login', 'register', 'landing']
     return !publicRoutes.includes(route.name as string)
   })
   

@@ -68,7 +68,7 @@ export async function login(email: string, password: string) {
   if(!expiresIn) throw new Error("JWT_EXPIRES_IN no configurado")
 
   const token = jwt.sign(
-    { userId: user.id, role: user.role },
+    { userId: user.id, role: user.role, firstName: user.firstName },
     secret,
     { expiresIn: expiresIn as jwt.SignOptions["expiresIn"] }
   )

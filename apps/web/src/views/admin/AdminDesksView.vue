@@ -1,277 +1,315 @@
 <script setup lang="ts">
-  import { ref, onMounted } from 'vue';
-  import { fetchDesks, createDesk, updateDesk, deleteDesk } from '@/services/desks';
-  import { fetchZones } from '@/services/zones';
-  import { useToast } from '@/composables/useToast';
+import { ref, onMounted, nextTick, computed } from 'vue'
+import { fetchDesks, createDesk, updateDesk, deleteDesk } from '@/services/desks'
+import { fetchZones } from '@/services/zones'
+import { useToast } from '@/composables/useToast'
+import { Plus, Pencil, Trash2, Monitor, X, MapPin } from 'lucide-vue-next'
+import gsap from 'gsap'
+import AppSpinner from '@/components/ui/AppSpinner.vue'
 
-  type DeskStatus = 'AVAILABLE' | 'MAINTENANCE'
+type DeskStatus = 'AVAILABLE' | 'MAINTENANCE'
 
-  interface Desk {
-    id: string
-    code: string
-    zoneId: string
-    status: DeskStatus
-    posX: number
-    posY: number
-  }
+interface Desk {
+  id: string
+  code: string
+  zoneId: string
+  status: DeskStatus
+  posX: number
+  posY: number
+}
 
-  interface Zone {
-    id: string
-    name: string
-    description: string
-    floor: number
-  }
+interface Zone {
+  id: string
+  name: string
+  description: string | null
+  floor: number
+}
 
-  const desks = ref<Desk[]>([])
-  const zones = ref<Zone[]>([])
-  const loading = ref(false)
-  const toast = useToast()
+const desks = ref<Desk[]>([])
+const zones = ref<Zone[]>([])
+const loading = ref(true)
+const toast = useToast()
+const selectedZone = ref<string>('all')
 
-  // Estado del modal
-  const showModal = ref(false)
-  const editingDesk = ref<Desk | null>(null)
-  const form = ref<Omit<Desk, 'id'>>({
-    code: '',
-    zoneId: '',
-    status: 'AVAILABLE',
-    posX: 0,
-    posY: 0
-  })
+const showModal = ref(false)
+const editingDesk = ref<Desk | null>(null)
+const submitting = ref(false)
+const form = ref<Omit<Desk, 'id'>>({
+  code: '',
+  zoneId: '',
+  status: 'AVAILABLE',
+  posX: 0,
+  posY: 0
+})
 
-  onMounted(async () => {
-    await loadDesks()
+onMounted(async () => {
+  try {
+    loading.value = true
+    desks.value = await fetchDesks()
     zones.value = await fetchZones()
-  })
 
-  /**
-   * Carga la lista de escritorios desde el servidor.
-   *
-   * Actualiza el estado de carga mientras se realiza la petición y
-   * muestra una notificación en caso de error.
-   *
-   * @returns Una promesa que se resuelve cuando los escritorios han sido cargados.
-   */
-  async function loadDesks() {
-    try {
-      loading.value = true
-      desks.value = await fetchDesks()
-    } catch {
-      toast.error('Error al cargar escritorio')
-    } finally {
-      loading.value = false
+    await nextTick()
+    gsap.fromTo('.desk-card',
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: 'power3.out' }
+    )
+  } catch {
+    toast.error('Error al cargar datos')
+  } finally {
+    loading.value = false
+  }
+})
+
+const filteredDesks = computed(() => {
+  if(selectedZone.value === 'all') return desks.value
+  return desks.value.filter(desk => desk.zoneId === selectedZone.value)
+})
+
+async function loadDesks() {
+  try {
+    desks.value = await fetchDesks()
+
+    await nextTick()
+    gsap.fromTo('.desk-card',
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: 'power3.out' }
+    )
+  } catch {
+    toast.error('Error al cargar escritorios')
+  }
+}
+
+function getZoneName(zoneId: string) {
+  const zone = zones.value.find(z => z.id === zoneId)
+  return zone ? zone.name : 'Sin zona'
+}
+
+function openCreateModal() {
+  editingDesk.value = null
+  form.value = { code: '', zoneId: '', status: 'AVAILABLE', posX: 0, posY: 0 }
+  showModal.value = true
+}
+
+function openEditModal(desk: Desk) {
+  editingDesk.value = desk
+  form.value = {
+    code: desk.code,
+    zoneId: desk.zoneId,
+    status: desk.status,
+    posX: desk.posX,
+    posY: desk.posY
+  }
+  showModal.value = true
+}
+
+async function handleSubmit() {
+  try {
+    submitting.value = true
+    if (editingDesk.value) {
+      await updateDesk(editingDesk.value.id, form.value)
+      toast.success('Escritorio actualizado')
+    } else {
+      await createDesk(form.value)
+      toast.success('Escritorio creado')
     }
+    showModal.value = false
+    await loadDesks()
+  } catch (e: any) {
+    toast.error(e.response?.data?.error || 'Error al guardar escritorio')
+  } finally {
+    submitting.value = false
   }
+}
 
-  /**
-   * Abre el modal para crear un nuevo escritorio.
-   *
-   * Reinicia el formulario con sus valores iniciales y establece el modo
-   * de creación eliminando cualquier escritorio seleccionado para edición.
-   */
-  function openCreateModal() {
-    editingDesk.value = null
-    form.value = { code: '', zoneId: '', status: 'AVAILABLE', posX: 0, posY: 0 }
-    showModal.value = true
+async function handleDelete(desk: Desk) {
+  if (!confirm(`¿Eliminar el escritorio "${desk.code}"?`)) return
+
+  try {
+    await deleteDesk(desk.id)
+    toast.success('Escritorio eliminado')
+    await loadDesks()
+  } catch (e: any) {
+    toast.error(e.response?.data?.error || 'Error al eliminar escritorio')
   }
-
-  /**
-   * Abre el modal para editar un escritorio existente.
-   *
-   * Carga los datos del escritorio seleccionado en el formulario
-   * y establece el modo de edición.
-   *
-   * @param desk - Escritorio que se desea editar.
-   */
-  function openEditModal(desk: Desk) {
-    editingDesk.value = desk
-    form.value = {
-      code: desk.code,
-      zoneId: desk.zoneId,
-      status: desk.status,
-      posX: desk.posX,
-      posY: desk.posY
-    }
-    showModal.value = true
-  }
-
-  /**
-   * Procesa el formulario de creación o actualización de un escritorio.
-   *
-   * Si existe un escritorio seleccionado para edición, actualiza sus datos.
-   * De lo contrario, crea un nuevo escritorio. Después de completar la
-   * operación, cierra el modal y recarga la lista de escritorios.
-   *
-   * Muestra una notificación de éxito o error según el resultado de la operación.
-   */
-  async function handleSubmit() {
-    try {
-
-      if(editingDesk.value) {
-        await updateDesk(editingDesk.value.id, form.value)
-        toast.success('Escritorio actualizado')
-      } else {
-        await createDesk(form.value)
-        toast.success('Escritorio creado')
-      }
-
-      showModal.value = false
-      await loadDesks()
-      
-    } catch (e: any) {
-      toast.error(e.response?.data?.error || 'Error al guardar el escritorio')
-    }
-  }
-
-  /**
-   * Elimina un escritorio después de solicitar confirmación al usuario.
-   *
-   * Si la eliminación es exitosa, muestra una notificación y actualiza
-   * la lista de escritorios.
-   *
-   * @param desk - Escritorio que se desea eliminar.
-   */
-  async function handleDelete(desk: Desk) {
-    if(!confirm(`Eliminar el escritorio "${desk.code}"?`)) return
-
-    try {
-      await deleteDesk(desk.id)
-      toast.success('Escritorio eliminado')
-      await loadDesks()
-
-    } catch (e: any) {
-      toast.error(e.response?.data?.error || 'Error al eliminar escritorio')
-    }
-  }
-
-  /**
- * Obtiene el nombre de una zona a partir de su identificador.
- *
- * @param zoneId - Identificador de la zona.
- *
- * @returns Nombre de la zona o `Sin zona` si no se encuentra.
- */
-  function getZoneName(zoneId: string) {
-    const zone = zones.value.find(z => z.id === zoneId)
-    return zone ? zone.name : 'Sin zona'
-  }
+}
 </script>
 
 <template>
-  <div class="p-6">
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">Gestion de Escritorios</h1>
-      <button
-        @click="openCreateModal"
-        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
-      >
-        Nuevo Escritorio
-      </button>
-    </div>
+  <div class="pt-16 min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6 py-8">
 
-    <div v-if="loading" class="text-gray-500">Cargando...</div>
-
-    <div v-else-if="desks.length === 0" class="text-center py-12 text-gray-500">
-      No hay escritorios registrados
-    </div>
-
-    <div v-else class="space-y-3">
-      <div 
-        v-for="desk in desks"
-        :key="desk.id"
-        class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex items-center justify-between"
-      >
+      <div class="flex items-center justify-between mb-8">
         <div>
-          <span class="font-bold">{{ desk.code }}</span>
-          <span class="text-sm text-gray-500 ml-2">{{desk.status}}</span>
-          <p class="text-sm text-gray-600 mt-1">{{ getZoneName(desk.zoneId) }}</p>
+          <h1 class="text-3xl font-bold text-gray-900">Escritorios</h1>
+          <p class="mt-1 text-sm text-gray-500">Administra los puestos de trabajo</p>
         </div>
+        <button
+          @click="openCreateModal"
+          class="flex items-center gap-2 px-4 py-2.5 bg-primary-700 text-white text-sm font-medium rounded-lg hover:bg-primary-800 transition-colors"
+        >
+          <Plus class="w-4 h-4" />
+          Nuevo Escritorio
+        </button>
+      </div>
 
-        <div class="flex gap-2">
-          <button
-            @click="openEditModal(desk)"
-            class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
-          >
-            Editar
-          </button>
-          <button
-            @click="handleDelete(desk)"
-            class="px-3 py-1.5 text-sm bg-red-100 text-red-700 rounded-md hover:bg-red-200"
-          >
-            Eliminar
-          </button>
+      <!-- Zone filter -->
+      <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+        <button
+          @click="selectedZone = 'all'"
+          :class="[
+            'px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all',
+            selectedZone === 'all'
+              ? 'bg-primary-700 text-white'
+              : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300 hover:text-primary-700'
+          ]"
+        >
+          Todas
+        </button>
+        <button
+          v-for="zone in zones"
+          :key="zone.id"
+          @click="selectedZone = zone.id"
+          :class="[
+            'px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all',
+            selectedZone === zone.id
+              ? 'bg-primary-700 text-white'
+              : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300 hover:text-primary-700'
+          ]"
+        >
+          {{ zone.name }}
+        </button>
+      </div>
+
+      <div v-if="loading" class="flex items-center justify-center py-20">
+        <AppSpinner size="lg" />
+      </div>
+
+      <div v-else-if="filteredDesks.length === 0" class="text-center py-16">
+        <Monitor class="w-10 h-10 mx-auto mb-3 text-gray-300" />
+        <p class="font-medium text-gray-500">No hay escritorios registrados</p>
+      </div>
+
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div
+          v-for="desk in filteredDesks"
+          :key="desk.id"
+          class="desk-card bg-white rounded-xl border border-gray-200 p-5 flex flex-col justify-between"
+        >
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-lg font-bold text-gray-900">{{ desk.code }}</span>
+              <span
+                :class="[
+                  'text-xs font-medium px-2.5 py-1 rounded-full',
+                  desk.status === 'AVAILABLE'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-gray-200 text-gray-600'
+                ]"
+              >
+                {{ desk.status === 'AVAILABLE' ? 'Disponible' : 'Mantenimiento' }}
+              </span>
+            </div>
+            <div class="flex items-center gap-1.5 text-sm text-gray-500">
+              <MapPin class="w-4 h-4 text-gray-400" />
+              {{ getZoneName(desk.zoneId) }}
+            </div>
+          </div>
+
+          <div class="flex gap-2 mt-4 pt-4 border-t border-gray-100">
+            <button
+              @click="openEditModal(desk)"
+              class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              <Pencil class="w-3.5 h-3.5" />
+              Editar
+            </button>
+            <button
+              @click="handleDelete(desk)"
+              class="flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors"
+            >
+              <Trash2 class="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Modal crear/editar -->
-    <div v-if="showModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-bold">
-            {{ editingDesk ? 'Editar Escritorio' : 'Crear Escritorio' }}
-          </h2>
-          <button @click="showModal = false" class="text-gray-400 hover:text-gray-600 text-xl">✕</button>
-        </div>
-
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Codigo</label>
-            <input
-              v-model="form.code"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Zona Norte"
-            />
+      <!-- Modal -->
+      <div v-if="showModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-bold text-gray-900">
+              {{ editingDesk ? 'Editar Escritorio' : 'Nuevo Escritorio' }}
+            </h2>
+            <button @click="showModal = false" class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+              <X class="w-5 h-5" />
+            </button>
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Zona</label>
-            <select v-model="form.zoneId" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-              <option disabled>Selecciona una zona</option>
-              <option v-for="zone in zones" :key="zone.id" :value="zone.id">
-                {{ zone.name }}
-              </option>
-            </select>
-          </div>
+          <div class="space-y-5">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Código</label>
+              <input
+                v-model="form.code"
+                type="text"
+                class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                placeholder="N-05"
+              />
+            </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-            <select v-model="form.status" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-              <option disabled>Selecciona el estado</option>
-              <option value="AVAILABLE">Disponible</option>
-              <option value="MAINTENANCE">Mantenimiento</option>
-            </select>
-          </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Zona</label>
+              <select
+                v-model="form.zoneId"
+                class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+              >
+                <option value="" disabled>Selecciona una zona</option>
+                <option v-for="zone in zones" :key="zone.id" :value="zone.id">
+                  {{ zone.name }} — Piso {{ zone.floor }}
+                </option>
+              </select>
+            </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Pos X</label>
-            <input
-              v-model.number="form.posX"
-              type="number"
-              min="1"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Posicion horizontal"
-            />
-          </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Estado</label>
+              <select
+                v-model="form.status"
+                class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+              >
+                <option value="AVAILABLE">Disponible</option>
+                <option value="MAINTENANCE">Mantenimiento</option>
+              </select>
+            </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Pos Y</label>
-            <input
-              v-model.number="form.posY"
-              type="number"
-              min="1"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Posicion vertical"
-            />
-          </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Pos X</label>
+                <input
+                  v-model.number="form.posX"
+                  type="number"
+                  min="0"
+                  class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Pos Y</label>
+                <input
+                  v-model.number="form.posY"
+                  type="number"
+                  min="0"
+                  class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                />
+              </div>
+            </div>
 
-          <button
-            @click="handleSubmit"
-            :disabled="!form.code"
-            class="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-          >
-            {{ editingDesk ? 'Guardar cambios' : 'Crear escritorio' }}
-          </button>
+            <button
+              @click="handleSubmit"
+              :disabled="!form.code || !form.zoneId || submitting"
+              class="w-full py-2.5 px-4 bg-primary-700 text-white font-medium rounded-lg hover:bg-primary-800 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+            >
+              <AppSpinner v-if="submitting" size="sm" />
+              <span v-else>{{ editingDesk ? 'Guardar cambios' : 'Crear escritorio' }}</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -7,6 +7,7 @@ import AdminDashboardView from "@/views/admin/AdminDashboardView.vue"
 import AdminZonesView from "@/views/admin/AdminZonesView.vue"
 import AdminDesksView from "@/views/admin/AdminDesksView.vue"
 import AdminReservationsView from "@/views/admin/AdminReservationsView.vue"
+import LandingView from "@/views/landing/LandingView.vue"
 
 const router = createRouter({
   history: createWebHistory(),
@@ -57,7 +58,8 @@ const router = createRouter({
     },
     {
       path: "/",
-      redirect: "/login"
+      name: "landing",
+      component: LandingView
     }
   ]
 })
@@ -69,7 +71,7 @@ router.beforeEach((to) => {
   const token = localStorage.getItem("token")
 
   // rutas que no requieren autenticacion
-  const publicRoutes  = ["login","register"]
+  const publicRoutes  = ["landing", "login", "register"]
 
   // Si requiere auth y no hay token. Redirige -> login
   if(!publicRoutes.includes(to.name as string) && !token) {
@@ -78,6 +80,7 @@ router.beforeEach((to) => {
 
   // Si esta autenticado y va a register o login. Redirige -> dashboard
   if(publicRoutes.includes(to.name as string) && token) {
+    if(to.name === "landing") return { name: "dashboard"}
     return { name: "dashboard"}
   }
 

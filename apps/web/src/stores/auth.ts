@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import api from '@/services/api'
+import { getProfile } from '@/services/users'
 
 /**
  * Decodifica el payload de un token JWT.
@@ -30,6 +31,15 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin = computed(() => user.value?.role === 'ADMIN')
   const userRole = computed(() => user.value?.role || null)
 
+  async function loadProfile() {
+    try {
+      const profile = await getProfile()
+      user.value = { ...user.value, ...profile }
+    } catch {
+      // silencioso, si falla el usuario continua con los datos del JWT
+    }
+  }
+
   async function login(email: string, password: string) {
     const response = await api.post('/auth/login', { email, password })
     token.value = response.data.token
@@ -48,5 +58,5 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('token')
   }
 
-  return { token, user, isAuthenticated, isAdmin, userRole, login, register, logout }
+  return { token, user, isAuthenticated, isAdmin, userRole, login, register, logout, loadProfile }
 })

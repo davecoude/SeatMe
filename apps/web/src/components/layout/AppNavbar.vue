@@ -11,6 +11,7 @@ import {
   LogOut,
   Menu,
   X,
+  User,
 } from 'lucide-vue-next'
 
 const route = useRouter()
@@ -104,9 +105,19 @@ function navigate(path: string) {
         <!-- Logout desktop -->
         <div class="flex items-center gap-3">
           <!-- User name -->
-          <span v-if="auth.user" class="hidden sm:block text-sm font-bold text-gray-500">
-            Hola {{ auth.user.firstName }}!
-          </span>
+          <RouterLink
+            v-if="auth.user"
+            to="/profile"
+            class="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
+          >
+            <img
+              v-if="auth.user.avatarUrl"
+              :src="auth.user.avatarUrl"
+              class="w-6 h-6 rounded-full object-cover"
+              >
+              <User v-else class="w-4 h-4 text-gray-400" />
+              {{ auth.user.firstName }}
+          </RouterLink>
 
           <!-- Logout desktop -->
           <button

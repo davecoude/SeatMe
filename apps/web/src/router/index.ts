@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
@@ -8,6 +9,7 @@ import AdminZonesView from '@/views/admin/AdminZonesView.vue'
 import AdminDesksView from '@/views/admin/AdminDesksView.vue'
 import AdminReservationsView from '@/views/admin/AdminReservationsView.vue'
 import LandingView from '@/views/landing/LandingView.vue'
+import ProfileView from '@/views/profile/ProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -57,6 +59,11 @@ const router = createRouter({
       meta: { requiresAdmin: true },
     },
     {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView,
+    },
+    {
       path: '/',
       name: 'landing',
       component: LandingView,
@@ -67,7 +74,7 @@ const router = createRouter({
 /**
  * Route guards
  */
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const token = localStorage.getItem('token')
 
   // rutas que no requieren autenticacion
@@ -82,6 +89,14 @@ router.beforeEach((to) => {
   if (publicRoutes.includes(to.name as string) && token) {
     if (to.name === 'landing') return { name: 'dashboard' }
     return { name: 'dashboard' }
+  }
+
+  // Cargar perfil completo si hay token y aun no esta cargado
+  if (token && !publicRoutes.includes(to.name as string)) {
+    const auth = useAuthStore()
+    if (!auth.user?.email) {
+      await auth.loadProfile()
+    }
   }
 
   // Guard admin - decodificacion del token para verificar rol

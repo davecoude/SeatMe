@@ -1,5 +1,5 @@
-import { DeskStatus } from '../../../prisma/generated/prisma/client.js'
 import { prisma } from '../../config/database.js'
+import type { CreateDeskInput, UpdateDeskInput } from './desk.schema.js'
 
 /**
  * Crea un nuevo puesto de trabajo en el coworking.
@@ -12,13 +12,7 @@ import { prisma } from '../../config/database.js'
  * @param data.posY - Coordenada Y para renderizado en el mapa visual
  * @returns El puesto creado con su ID generado
  */
-export async function createDesk(data: {
-  code: string
-  zoneId: string
-  status: DeskStatus
-  posX: number
-  posY: number
-}) {
+export async function createDesk(data: CreateDeskInput) {
   const desk = await prisma.desk.create({ data })
   return desk
 }
@@ -61,10 +55,7 @@ export async function getDeskById(id: string) {
  * @returns El puesto actualizado
  * @throws Error si el puesto no existe
  */
-export async function updateDesk(
-  id: string,
-  data: Partial<{ code: string; zoneId: string; status: DeskStatus; posX: number; posY: number }>,
-) {
+export async function updateDesk(id: string, data: UpdateDeskInput) {
   const desk = await prisma.desk.update({ where: { id }, data })
   return desk
 }

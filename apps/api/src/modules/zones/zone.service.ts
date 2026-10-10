@@ -1,4 +1,5 @@
 import { prisma } from '../../config/database.js'
+import type { CreateZoneInput, UpdateZoneInput } from './zone.schema.js'
 
 /**
  * Crea un registro para la tabla Zone con los campos definidos
@@ -9,7 +10,7 @@ import { prisma } from '../../config/database.js'
  * @param data.floor - numero de piso donde su ubica la zona
  * @returns la zona creada con su ID generado
  */
-export async function createZone(data: { name: string; description?: string; floor: number }) {
+export async function createZone(data: CreateZoneInput) {
   const zone = await prisma.zone.create({ data })
   return zone
 }
@@ -45,10 +46,7 @@ export async function getZoneById(id: string) {
  * @param data.floor - numero de piso de la zona
  * @returns la zona con los datos actualizados
  */
-export async function updateZone(
-  id: string,
-  data: Partial<{ name: string; description: string; floor: number }>,
-) {
+export async function updateZone(id: string, data: UpdateZoneInput) {
   const zone = prisma.zone.update({ where: { id }, data })
   return zone
 }

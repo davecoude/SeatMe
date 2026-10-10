@@ -1,20 +1,24 @@
 import { Request, Response } from 'express'
 import { createZone, getAllZones, getZoneById, updateZone, deleteZone } from './zone.service.js'
+import { CreateZoneSchema, UpdateZoneSchema } from './zone.schema.js'
+import { sendError } from '../../utils/send-error.js'
 
 /**
  * Maneja la peticion POST y llama al servicio que lo crea
  *
- * @param req.body - datos dentro del cuerpo de la peticion
+ * @param req.body - datos dentro del cuerpo de la peticion (validados con CreateZoneSchema)
  * @param res 201 registro exitoso de la zona
+ * @throws 400 - datos invalidos
  * @throws 500 - error al crear la zona
  * @returns la zona creada
  */
 export async function handleCreateZone(req: Request, res: Response) {
   try {
-    const zone = await createZone(req.body)
+    const data = CreateZoneSchema.parse(req.body)
+    const zone = await createZone(data)
     res.status(201).json(zone)
-  } catch {
-    res.status(500).json({ error: 'Error al crear registro de zona' })
+  } catch (error) {
+    sendError(res, error, 'Error al crear registro de zona')
   }
 }
 
@@ -68,7 +72,10 @@ export async function handleGetZoneById(req: Request, res: Response) {
  * Maneja la peticion PATCH que llama al servicio que actuliza la zona
  *
  * @param req.params.id - id de la zona
+ * @param req.body - campos a actualizar (validados con UpdateZoneSchema)
  * @param res - 200 zona actualizada
+ * @throws 400 - datos invalidos
+ * @throws 404 - zona no encontrada
  * @throws 500 - error al actualizar la zona
  * @returns la zona actualizada
  */
@@ -80,10 +87,14 @@ export async function handleUpdateZone(req: Request, res: Response) {
       res.status(400).json({ error: 'ID invalido' })
       return
     }
-    const zone = await updateZone(id, req.body)
+
+    const data = UpdateZoneSchema.parse(req.body)
+    const zone = await updateZone(id, data)
     res.status(200).json(zone)
-  } catch {
-    res.status(500).json({ error: 'Error al actualizar la zona' })
+  } catch (error) {
+    sendError(res, error, 'Error al actualizar la zona', {
+      P2025: { status: 404, message: 'Zona no encontrada' },
+    })
   }
 }
 
@@ -92,7 +103,9 @@ export async function handleUpdateZone(req: Request, res: Response) {
  *
  * @param req.params.id - id de la zona
  * @param res - 204 eliminacion exitosa de la zona
- * @throws 500 - error al actualizar la zona
+ * @throws 404 - zona no encontrada
+ * @throws 409 - la zona tiene escritorios asociados
+ * @throws 500 - error al eliminar la zona
  * @returns - no hay body que devolver
  */
 export async function handleDeleteZone(req: Request, res: Response) {
@@ -106,7 +119,13 @@ export async function handleDeleteZone(req: Request, res: Response) {
 
     await deleteZone(id)
     res.status(204).send()
-  } catch {
-    res.status(500).json({ error: 'Error al eliminar la zona' })
+  } catch (error) {
+    sendError(res, error, 'Error al eliminar la zona', {
+      P2025: { status: 404, message: 'Zona no encontrada' },
+      P2003: {
+        status: 409,
+        message: 'No se puede eliminar la zona porque tiene escritorios asociados',
+      },
+    })
   }
 }

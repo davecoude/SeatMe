@@ -6,20 +6,26 @@ import {
   updateAmenity,
   deleteAmenity,
 } from './amenities.service.js'
+import { CreateAmenitySchema, UpdateAmenitySchema } from './amenities.schema.js'
+import { sendError } from '../../utils/send-error.js'
+
+/** Error cuando el amenity no existe */
+const AMENITY_NOT_FOUND = { status: 404, message: 'Amenity no encontrado' }
 
 /**
  * Maneja la creación de un nuevo amenity.
  *
  * @route POST /amenities
- * @param req - Body con name e icon
- * @param res - 201 con el amenity creado, o 500 si falla
+ * @param req - Body con name e icon (validados con CreateAmenitySchema)
+ * @param res - 201 con el amenity creado, 400 si los datos son inválidos, o 500 si falla
  */
 export async function handleCreateAmenity(req: Request, res: Response) {
   try {
-    const amenity = await createAmenity(req.body)
+    const data = CreateAmenitySchema.parse(req.body)
+    const amenity = await createAmenity(data)
     res.status(201).json(amenity)
-  } catch {
-    res.status(500).json({ error: 'Error al crear amenity' })
+  } catch (error) {
+    sendError(res, error, 'Error al crear amenity')
   }
 }
 
@@ -72,8 +78,9 @@ export async function handleGetAmenityById(req: Request, res: Response) {
  * Actualiza parcialmente un amenity existente.
  *
  * @route PATCH /amenities/:id
- * @param req - Parámetro "id" en ruta, campos a actualizar en body
- * @param res - 200 con el amenity actualizado, 400 si el ID es inválido, o 500 si falla
+ * @param req - Parámetro "id" en ruta, campos a actualizar en body (validados con UpdateAmenitySchema)
+ * @param res - 200 con el amenity actualizado, 400 si los datos son inválidos,
+ *              404 si no existe, o 500 si falla
  */
 export async function handleUpdateAmenity(req: Request, res: Response) {
   try {
@@ -84,10 +91,11 @@ export async function handleUpdateAmenity(req: Request, res: Response) {
       return
     }
 
-    const updatedAmenity = await updateAmenity(id, req.body)
+    const data = UpdateAmenitySchema.parse(req.body)
+    const updatedAmenity = await updateAmenity(id, data)
     res.status(200).json(updatedAmenity)
-  } catch {
-    res.status(500).json({ error: 'Error al actualizar amenity' })
+  } catch (error) {
+    sendError(res, error, 'Error al actualizar amenity', { P2025: AMENITY_NOT_FOUND })
   }
 }
 
@@ -96,7 +104,8 @@ export async function handleUpdateAmenity(req: Request, res: Response) {
  *
  * @route DELETE /amenities/:id
  * @param req - Parámetro de ruta "id"
- * @param res - 204 sin contenido si se elimina, 400 si el ID es inválido, o 500 si falla
+ * @param res - 204 sin contenido si se elimina, 400 si el ID es inválido, 404 si no existe,
+ *              409 si está asignado a algún puesto, o 500 si falla
  */
 export async function handleDeleteAmenity(req: Request, res: Response) {
   try {
@@ -109,7 +118,13 @@ export async function handleDeleteAmenity(req: Request, res: Response) {
 
     await deleteAmenity(id)
     res.status(204).send()
-  } catch {
-    res.status(500).json({ error: 'Error al eliminar el amenity' })
+  } catch (error) {
+    sendError(res, error, 'Error al eliminar el amenity', {
+      P2025: AMENITY_NOT_FOUND,
+      P2003: {
+        status: 409,
+        message: 'No se puede eliminar el amenity porque esta asignado a uno o mas escritorios',
+      },
+    })
   }
 }

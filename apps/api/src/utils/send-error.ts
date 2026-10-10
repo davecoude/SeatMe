@@ -7,8 +7,11 @@ import { HttpError } from './http-error.js'
  * Mapa de códigos de error de Prisma a la respuesta que se quiere devolver.
  * - P2025: el registro a actualizar/eliminar no existe
  * - P2003: violación de llave foránea (referencia inexistente o registros dependientes)
+ * - P2002: violación de restricción única (el registro ya existe)
  */
-export type PrismaErrorMap = Partial<Record<'P2003' | 'P2025', { status: number; message: string }>>
+export type PrismaErrorMap = Partial<
+  Record<'P2002' | 'P2003' | 'P2025', { status: number; message: string }>
+>
 
 /**
  * Envía una respuesta de error según el tipo de error capturado.

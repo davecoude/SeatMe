@@ -1,4 +1,5 @@
 import { prisma } from '../../config/database.js'
+import type { CreateAmenityInput, UpdateAmenityInput } from './amenities.schema.js'
 
 /**
  * Crea un nuevo amenity en el sistema.
@@ -8,7 +9,7 @@ import { prisma } from '../../config/database.js'
  * @param data.icon - Identificador del ícono para renderizado en frontend
  * @returns El amenity creado con su ID generado
  */
-export async function createAmenity(data: { name: string; icon: string }) {
+export async function createAmenity(data: CreateAmenityInput) {
   const amenity = await prisma.amenity.create({ data })
   return amenity
 }
@@ -44,7 +45,7 @@ export async function getAmenityById(id: string) {
  * @returns El amenity actualizado
  * @throws Error si el amenity no existe
  */
-export async function updateAmenity(id: string, data: Partial<{ name: string; icon: string }>) {
+export async function updateAmenity(id: string, data: UpdateAmenityInput) {
   const updatedAmenity = await prisma.amenity.update({ where: { id }, data })
   return updatedAmenity
 }

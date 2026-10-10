@@ -1,4 +1,3 @@
-import { isFunctionTypeNode } from 'typescript'
 import { ref } from 'vue'
 
 type ToastType = 'success' | 'error' | 'warning'

@@ -17,7 +17,7 @@ import { getProfile } from '@/services/users'
 function decodeToken(token: string) {
   try {
     const payload = token.split('.')[1]
-    return JSON.parse(atob(payload))
+    return JSON.parse(atob(payload ?? ''))
   } catch {
     return null
   }

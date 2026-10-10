@@ -37,8 +37,9 @@ onMounted(async () => {
     zones.value = await fetchZones()
     desks.value = await fetchDesks()
 
-    if (zones.value.length > 0) {
-      selectZone(zones.value[0].id)
+    const firstZone = zones.value[0]
+    if (firstZone) {
+      selectZone(firstZone.id)
     }
   } catch (e: any) {
     toast.error('Error al cargar los datos')

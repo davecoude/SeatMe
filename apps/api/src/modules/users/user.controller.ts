@@ -23,7 +23,7 @@ export async function handleUploadAvatar(req: Request, res: Response) {
     res.status(200).json(user)
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Error al subir avatar'
-    res.status(500).json({ errro: msg })
+    res.status(500).json({ error: msg })
   }
 }
 

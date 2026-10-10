@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  MEMBER
+}
+
+enum DeskStatus {
+  AVAILABLE
+  MAINTENANCE
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id          String        @id @default(uuid())
+  email       String        @unique
+  password    String
+  firstName   String
+  lastName    String
+  role        UserRole
+  avatarUrl   String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  reservation Reservation[]
+}
+
+model Reservation {
+  id        String            @id @default(uuid())
+  userId    String
+  deskId    String
+  date      DateTime
+  startTime String
+  endTime   String
+  status    ReservationStatus
+  checkInAt DateTime?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  user      User              @relation(fields: [userId], references: [id])
+  desk      Desk              @relation(fields: [deskId], references: [id])
+}
+
+model Desk {
+  id          String        @id @default(uuid())
+  code        String
+  zoneId      String
+  status      DeskStatus
+  posX        Int
+  posY        Int
+  createdAt   DateTime      @default(now())
+  reservation Reservation[]
+  deskAmenity DeskAmenity[]
+  zone        Zone          @relation(fields: [zoneId], references: [id])
+}
+
+model Amenity {
+  id          String        @id @default(uuid())
+  name        String
+  icon        String
+  deskAmenity DeskAmenity[]
+}
+
+model DeskAmenity {
+  deskId    String
+  amenityId String
+  desk      Desk    @relation(fields: [deskId], references: [id])
+  amenity   Amenity @relation(fields: [amenityId], references: [id])
+
+  @@id([deskId, amenityId])
+}
+
+model Zone {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  floor       Int
+  desk        Desk[]
+}

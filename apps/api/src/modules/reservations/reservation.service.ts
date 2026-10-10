@@ -1,4 +1,22 @@
 import { prisma } from '../../config/database.js'
+import { HttpError } from '../../utils/http-error.js'
+
+/** Usuario que realiza la petición (viene del JWT en req.user) */
+type Requester = { userId: string; role: string }
+
+/**
+ * Verifica que el usuario pueda operar sobre la reserva.
+ * Solo el dueño de la reserva o un ADMIN tienen acceso.
+ *
+ * @param reservation - Reserva sobre la que se quiere operar
+ * @param requester - Usuario autenticado que hace la petición
+ * @throws HttpError 403 si el usuario no es dueño ni ADMIN
+ */
+function assertCanAccess(reservation: { userId: string }, requester: Requester) {
+  if (requester.role !== 'ADMIN' && reservation.userId !== requester.userId) {
+    throw new HttpError(403, 'No tiene permiso sobre esta reserva')
+  }
+}
 
 /**
  * Crea una nueva reserva validando todas las reglas de negocio.
@@ -96,13 +114,16 @@ export async function confirmReservation(reservationId: string) {
  * Guarda la fecha y hora exacta del check-in.
  *
  * @param reservationId - ID de la reserva
+ * @param requester - Usuario autenticado (debe ser dueño de la reserva o ADMIN)
  * @returns La reserva actualizada con checkInAt
- * @throws Error si la reserva no existe o no está en estado CONFIRMED
+ * @throws HttpError 404 si la reserva no existe, 403 si no tiene permiso
+ * @throws Error si la reserva no está en estado CONFIRMED
  */
-export async function checkInReservation(reservationId: string) {
+export async function checkInReservation(reservationId: string, requester: Requester) {
   const reservation = await prisma.reservation.findUnique({ where: { id: reservationId } })
 
-  if (!reservation) throw new Error('No se encontro la reserva')
+  if (!reservation) throw new HttpError(404, 'No se encontro la reserva')
+  assertCanAccess(reservation, requester)
   if (reservation.status !== 'CONFIRMED')
     throw new Error('Check_in habilitado unicamente para reservas confirmadas')
 
@@ -143,13 +164,16 @@ export async function completedReservation(reservationId: string) {
  * No elimina el registro — lo mantiene para historial y métricas.
  *
  * @param reservationId - ID de la reserva a cancelar
+ * @param requester - Usuario autenticado (debe ser dueño de la reserva o ADMIN)
  * @returns La reserva actualizada con status CANCELLED
- * @throws Error si la reserva no existe o ya está en CHECKED_IN/COMPLETED/CANCELLED
+ * @throws HttpError 404 si la reserva no existe, 403 si no tiene permiso
+ * @throws Error si la reserva ya está en CHECKED_IN/COMPLETED/CANCELLED
  */
-export async function cancelReservation(reservationId: string) {
+export async function cancelReservation(reservationId: string, requester: Requester) {
   const reservation = await prisma.reservation.findUnique({ where: { id: reservationId } })
 
-  if (!reservation) throw new Error('No se encontro la reserva')
+  if (!reservation) throw new HttpError(404, 'No se encontro la reserva')
+  assertCanAccess(reservation, requester)
   if (reservation.status !== 'PENDING' && reservation.status !== 'CONFIRMED')
     throw new Error('Cancelacion no valida para el estado actual de la reserva')
 
@@ -203,9 +227,11 @@ export async function getReservationByDesk(deskId: string, date: string) {
  * Incluye desk con zona y datos básicos del usuario.
  *
  * @param reservationId - ID de la reserva
- * @returns La reserva con relaciones incluidas, o null si no existe
+ * @param requester - Usuario autenticado (debe ser dueño de la reserva o ADMIN)
+ * @returns La reserva con relaciones incluidas
+ * @throws HttpError 404 si la reserva no existe, 403 si no tiene permiso
  */
-export async function getReservationById(reservationId: string) {
+export async function getReservationById(reservationId: string, requester: Requester) {
   const reservation = await prisma.reservation.findUnique({
     where: { id: reservationId },
     include: {
@@ -213,6 +239,9 @@ export async function getReservationById(reservationId: string) {
       user: { select: { id: true, firstName: true, lastName: true } },
     },
   })
+
+  if (!reservation) throw new HttpError(404, 'No se encontro la reserva')
+  assertCanAccess(reservation, requester)
 
   return reservation
 }

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { ZodError } from 'zod'
 import { CreateReservationSchema } from './reservation.schema.js'
+import { HttpError } from '../../utils/http-error.js'
 import {
   createReservation,
   getReservationByUser,
@@ -97,21 +98,31 @@ export async function handleGetReservationByUser(req: Request, res: Response) {
  * @param res - Respuesta HTTP de Express.
  *
  * @throws 400 - Si el ID es inválido o ocurre un error durante la consulta.
+ * @throws 401 - Si no existe un usuario autenticado.
+ * @throws 403 - Si la reservación no pertenece al usuario y no es ADMIN.
+ * @throws 404 - Si la reservación no existe.
  * @returns 200 - La reservación encontrada.
  */
 export async function handleGetReservationById(req: Request, res: Response) {
   try {
     const { id } = req.params
 
+    if (!req.user) {
+      res.status(401).json({ error: 'No autenticado' })
+      return
+    }
+
     if (!id || typeof id !== 'string') {
       res.status(400).json({ error: 'ID invalido' })
       return
     }
 
-    const reservation = await getReservationById(id)
+    const reservation = await getReservationById(id, req.user)
     res.status(200).json(reservation)
-  } catch {
-    res.status(400).json({ error: 'Error al obtener reservacion' })
+  } catch (error) {
+    const status = error instanceof HttpError ? error.status : 400
+    const msg = error instanceof HttpError ? error.message : 'Error al obtener reservacion'
+    res.status(status).json({ error: msg })
   }
 }
 
@@ -191,22 +202,31 @@ export async function handleConfirmReservation(req: Request, res: Response) {
  * @param res - Respuesta HTTP de Express.
  *
  * @throws 400 - Si el ID es inválido o no es posible realizar el check-in.
+ * @throws 401 - Si no existe un usuario autenticado.
+ * @throws 403 - Si la reservación no pertenece al usuario y no es ADMIN.
+ * @throws 404 - Si la reservación no existe.
  * @returns 200 - La reservación después de realizar el check-in.
  */
 export async function handleCheckInReservation(req: Request, res: Response) {
   try {
     const { id } = req.params
 
+    if (!req.user) {
+      res.status(401).json({ error: 'No autenticado' })
+      return
+    }
+
     if (!id || typeof id !== 'string') {
       res.status(400).json({ error: 'ID invalido' })
       return
     }
 
-    const reservation = await checkInReservation(id)
+    const reservation = await checkInReservation(id, req.user)
     res.status(200).json(reservation)
   } catch (error) {
+    const status = error instanceof HttpError ? error.status : 400
     const msg = error instanceof Error ? error.message : 'Error para realizar el check_in'
-    res.status(400).json({ error: msg })
+    res.status(status).json({ error: msg })
   }
 }
 
@@ -249,22 +269,31 @@ export async function handleCompletedReservation(req: Request, res: Response) {
  * @param res - Respuesta HTTP de Express.
  *
  * @throws 400 - Si el ID es inválido o no es posible cancelar la reservación.
+ * @throws 401 - Si no existe un usuario autenticado.
+ * @throws 403 - Si la reservación no pertenece al usuario y no es ADMIN.
+ * @throws 404 - Si la reservación no existe.
  * @returns 200 - La reservación cancelada.
  */
 export async function handleCancelReservation(req: Request, res: Response) {
   try {
     const { id } = req.params
 
+    if (!req.user) {
+      res.status(401).json({ error: 'No autenticado' })
+      return
+    }
+
     if (!id || typeof id !== 'string') {
       res.status(400).json({ error: 'ID invalido' })
       return
     }
 
-    const reservation = await cancelReservation(id)
+    const reservation = await cancelReservation(id, req.user)
     res.status(200).json(reservation)
   } catch (error) {
+    const status = error instanceof HttpError ? error.status : 400
     const msg = error instanceof Error ? error.message : 'Error para cancelar reserva'
-    res.status(400).json({ error: msg })
+    res.status(status).json({ error: msg })
   }
 }
 

@@ -110,7 +110,7 @@ export async function handleGetReservationById(req: Request, res: Response) {
 
     const reservation = await getReservationById(id)
     res.status(200).json(reservation)
-  } catch (error) {
+  } catch {
     res.status(400).json({ error: 'Error al obtener reservacion' })
   }
 }
@@ -281,7 +281,7 @@ export async function handleGetAllReservations(req: Request, res: Response) {
   try {
     const reservations = await getAllReservations()
     res.status(200).json(reservations)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al obtener reservas' })
   }
 }

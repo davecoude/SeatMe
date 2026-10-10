@@ -47,7 +47,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     }
 
     next()
-  } catch (error) {
+  } catch {
     res.status(401).json({ error: 'Token invalido o expirado' })
   }
 }

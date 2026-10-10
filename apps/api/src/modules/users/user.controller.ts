@@ -48,7 +48,7 @@ export async function handleGetProfile(req: Request, res: Response) {
     }
 
     res.status(200).json(user)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al obtener perfil' })
   }
 }

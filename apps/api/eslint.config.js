@@ -14,6 +14,10 @@ export default [
     rules: {
       ...tsPlugin.configs.recommended.rules,
       '@typescript-eslint/no-explicit-any': 'warn',
+      // Permite omitir propiedades con rest: const { password: _, ...rest } = user
+      '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
+      // Permite la augmentación de tipos: declare global { namespace Express { ... } }
+      '@typescript-eslint/no-namespace': ['error', { allowDeclarations: true }],
     },
   },
   prettierConfig,

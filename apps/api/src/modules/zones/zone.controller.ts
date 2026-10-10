@@ -13,7 +13,7 @@ export async function handleCreateZone(req: Request, res: Response) {
   try {
     const zone = await createZone(req.body)
     res.status(201).json(zone)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al crear registro de zona' })
   }
 }
@@ -29,7 +29,7 @@ export async function handleGetAllZones(req: Request, res: Response) {
   try {
     const zones = await getAllZones()
     res.status(200).json(zones)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al obtener las zonas' })
   }
 }
@@ -59,7 +59,7 @@ export async function handleGetZoneById(req: Request, res: Response) {
     }
 
     res.status(200).json(zone)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al obtener zona' })
   }
 }
@@ -82,7 +82,7 @@ export async function handleUpdateZone(req: Request, res: Response) {
     }
     const zone = await updateZone(id, req.body)
     res.status(200).json(zone)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al actualizar la zona' })
   }
 }
@@ -106,7 +106,7 @@ export async function handleDeleteZone(req: Request, res: Response) {
 
     await deleteZone(id)
     res.status(204).send()
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al eliminar la zona' })
   }
 }

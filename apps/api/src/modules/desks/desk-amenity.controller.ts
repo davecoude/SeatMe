@@ -23,7 +23,7 @@ export async function handleCreateDeskAmenity(req: Request, res: Response) {
 
     const deskAmenity = await createDeskAmenity(deskId, amenityId)
     res.status(201).json(deskAmenity)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al crear relacion deskAmenity' })
   }
 }
@@ -46,7 +46,7 @@ export async function handleGetDeskAmenity(req: Request, res: Response) {
 
     const deskAmenity = await getDeskAmenity(deskId)
     res.status(200).json(deskAmenity)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al obtener deskAmenity' })
   }
 }
@@ -74,7 +74,7 @@ export async function handleDeleteDeskAmenity(req: Request, res: Response) {
     await deleteDeskAmenity(deskId, amenityId)
 
     res.status(204).send()
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al eliminar deskAmenity' })
   }
 }

@@ -13,7 +13,7 @@ export async function handleCreateDesk(req: Request, res: Response) {
   try {
     const desk = await createDesk(req.body)
     res.status(201).json(desk)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al crear desk' })
   }
 }
@@ -29,7 +29,7 @@ export async function handleGetAllDesks(req: Request, res: Response) {
   try {
     const desk = await getAllDesks()
     res.status(200).json(desk)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al obtener todos los registros' })
   }
 }
@@ -58,7 +58,7 @@ export async function handleGetDeskById(req: Request, res: Response) {
     }
 
     res.status(200).json(desk)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al obtener desk' })
   }
 }
@@ -81,7 +81,7 @@ export async function handleUpdateDesk(req: Request, res: Response) {
 
     const desk = await updateDesk(id, req.body)
     res.status(200).json(desk)
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al actualizar desk' })
   }
 }
@@ -104,7 +104,7 @@ export async function handleDeleteDesk(req: Request, res: Response) {
 
     await deleteDesk(id)
     res.status(204).send()
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Error al eliminar desk' })
   }
 }

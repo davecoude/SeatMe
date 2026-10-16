@@ -1,7 +1,7 @@
 import { createZone, getAllZones, getZoneById, updateZone, deleteZone } from './zone.service.js'
 
 // Mockear el modulo que exporta prisma
-vi.mock('../../config/database.ts', () => ({
+vi.mock('../../config/database.js', () => ({
   prisma: {
     zone: {
       create: vi.fn(),
@@ -16,6 +16,10 @@ vi.mock('../../config/database.ts', () => ({
 import { prisma } from '../../config/database.js'
 
 describe('ZonaService', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   // getAllZones service test
   it('Obtener todas las zonas', async () => {
     const zones = [
@@ -115,11 +119,7 @@ describe('ZonaService', () => {
 
     const result = await deleteZone(zoneId)
 
-    expect(result).toEqual({ id: zoneId,...zone })
-    expect(prisma.zone.delete).toHaveBeenCalledWith({ where: { id: zoneId }})
+    expect(result).toEqual({ id: zoneId, ...zone })
+    expect(prisma.zone.delete).toHaveBeenCalledWith({ where: { id: zoneId } })
   })
-})
-
-beforeEach(() => {
-  vi.clearAllMocks()
 })

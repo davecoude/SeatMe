@@ -1,0 +1,28 @@
+{
+  "title": "SeatMe",
+  "summary": {
+    "es": "Plataforma para reservar escritorios en un coworking: los miembros eligen zona, escritorio y franja horaria, y los administradores gestionan espacios y el ciclo de vida de cada reserva.",
+    "en": "Desk booking platform for coworking spaces: members pick a zone, desk and time slot, while admins manage the spaces and the lifecycle of every booking."
+  },
+  "role": {
+    "es": "Desarrollo full-stack: modelo de datos, API REST, frontend y despliegue",
+    "en": "Full-stack development: data model, REST API, frontend and deployment"
+  },
+  "stack": ["Vue 3", "TypeScript", "Pinia", "Tailwind CSS", "Node.js", "Express", "Prisma", "PostgreSQL", "Zod", "JWT", "Vitest"],
+  "productLanguage": "es",
+  "cover": ".portfolio/cover.webp",
+  "highlights": {
+    "es": [
+      "Reservas como máquina de estados: pendiente → confirmada → check-in → completada, o cancelada",
+      "Detección de solapamientos por escritorio y por usuario antes de crear cada reserva",
+      "Autorización por rol (miembro/admin) con JWT y protección contra IDOR en las reservas",
+      "21 tests unitarios con Vitest sobre los servicios de zonas, escritorios y reservas"
+    ],
+    "en": [
+      "Bookings modeled as a state machine: pending → confirmed → checked in → completed, or cancelled",
+      "Overlap detection per desk and per user before every booking is created",
+      "Role-based authorization (member/admin) with JWT and IDOR protection on bookings",
+      "21 Vitest unit tests covering the zone, desk and booking services"
+    ]
+  }
+}

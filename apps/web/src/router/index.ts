@@ -10,6 +10,7 @@ import AdminDesksView from '@/views/admin/AdminDesksView.vue'
 import AdminReservationsView from '@/views/admin/AdminReservationsView.vue'
 import LandingView from '@/views/landing/LandingView.vue'
 import ProfileView from '@/views/profile/ProfileView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -68,6 +69,11 @@ const router = createRouter({
       name: 'landing',
       component: LandingView,
     },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: NotFoundView,
+    },
   ],
 })
 
@@ -75,6 +81,9 @@ const router = createRouter({
  * Route guards
  */
 router.beforeEach(async (to) => {
+  // La página 404 debe ser accesible tanto con sesión como sin ella.
+  if (to.name === 'not-found') return
+
   const token = localStorage.getItem('token')
 
   // rutas que no requieren autenticacion

@@ -12,6 +12,8 @@ import {
   Laptop,
 } from 'lucide-vue-next'
 
+const currentYear = new Date().getFullYear()
+
 const heroRef = ref<HTMLElement | null>(null)
 const featuresRef = ref<HTMLElement | null>(null)
 const stepsRef = ref<HTMLElement | null>(null)
@@ -260,7 +262,9 @@ onMounted(() => {
 
     <footer class="py-8 px-6 border-t border-gray-200">
       <div class="max-w-6xl mx-auto flex items-center justify-between">
-        <span class="text-sm text-gray-500">© 2026 SeatMe. Todos los derechos reservados.</span>
+        <span class="text-sm text-gray-500">
+          © {{ currentYear }} SeatMe. Todos los derechos reservados.
+        </span>
         <div class="flex items-center gap-6">
           <a href="#" class="text-sm text-gray-500 hover:text-primary-700 transition-colors"
             >Términos</a

@@ -86,6 +86,15 @@ const filteredReservations = computed(() => {
   return reservations.value
 })
 
+/**
+ * Mensaje que se muestra cuando el filtro elegido no tiene reservas.
+ */
+const emptyMessage = computed(() => {
+  if (activeFilter.value === 'active') return 'No tienes reservas activas'
+  if (activeFilter.value === 'past') return 'No tienes reservas en tu historial'
+  return 'Aún no tienes reservas'
+})
+
 async function setFilter(key: string) {
   activeFilter.value = key
 
@@ -237,8 +246,15 @@ function getMosaicClass(index: number): string {
       <!-- Empty state -->
       <div v-else-if="filteredReservations.length === 0" class="text-center py-16">
         <CalendarDays class="w-10 h-10 mx-auto mb-3 text-gray-300" />
-        <p class="font-medium text-gray-500">No hay reservas para mostrar</p>
+        <p class="font-medium text-gray-500">{{ emptyMessage }}</p>
         <p class="text-sm text-gray-400 mt-1">Tus reservas aparecerán aquí cuando realices una</p>
+        <RouterLink
+          to="/dashboard"
+          class="inline-flex items-center gap-1.5 mt-4 px-4 py-2 text-sm font-medium bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition-colors"
+        >
+          <CalendarDays class="w-4 h-4" />
+          Reservar un escritorio
+        </RouterLink>
       </div>
 
       <!-- Reservations mosaic -->

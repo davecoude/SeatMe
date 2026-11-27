@@ -118,12 +118,15 @@ async function handleCheckIn(id: string) {
 /**
  * Cancela una reserva.
  *
- * Después de cancelar la reserva, actualiza la lista de reservas
- * para reflejar el nuevo estado.
+ * Antes de cancelar le pide confirmación al usuario. Si responde que no,
+ * la reserva queda igual. Después de cancelar la reserva, actualiza la
+ * lista de reservas para reflejar el nuevo estado.
  *
  * @param id - Identificador de la reserva que se desea cancelar.
  */
 async function handleCancel(id: string) {
+  if (!window.confirm('¿Seguro que quieres cancelar esta reserva?')) return
+
   try {
     await cancelReservation(id)
     toast.success('Reserva cancelada')

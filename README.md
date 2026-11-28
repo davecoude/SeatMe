@@ -86,6 +86,9 @@ La API no arranca si faltan `SUPABASE_URL` o `SUPABASE_ANON_KEY`, y el login fal
 | `npm run test:unit` | Tests con Vitest |
 | `npm run lint` / `npm run format` | oxlint + ESLint / Prettier |
 
+
+
+
 ## Arquitectura
 
 ![Diagrama de arquitectura de SeatMe: la Web SPA llama a la API Express, que valida el JWT en el middleware y persiste en PostgreSQL y Supabase Storage](docs/architecture.svg)

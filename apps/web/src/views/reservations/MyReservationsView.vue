@@ -93,21 +93,13 @@ const filteredReservations = computed(() => {
 })
 
 /**
- * Cantidad de reservas que corresponde a cada filtro.
- *
- * Al derivarse de `reservations`, se recalcula de forma automatica cuando el
- * listado se recarga tras cancelar una reserva o hacer check-in.
- *
- * @returns Mapa con la clave de cada filtro y su numero de reservas.
+ * Mensaje que se muestra cuando el filtro elegido no tiene reservas.
  */
-const reservationCounts = computed<Record<string, number>>(() =>
-  Object.fromEntries(
-    filters.map((filter) => [
-      filter.key,
-      reservations.value.filter(filterPredicates[filter.key]).length,
-    ]),
-  ),
-)
+const emptyMessage = computed(() => {
+  if (activeFilter.value === 'active') return 'No tienes reservas activas'
+  if (activeFilter.value === 'past') return 'No tienes reservas en tu historial'
+  return 'Aún no tienes reservas'
+})
 
 async function setFilter(key: string) {
   activeFilter.value = key
@@ -141,12 +133,15 @@ async function handleCheckIn(id: string) {
 /**
  * Cancela una reserva.
  *
- * Después de cancelar la reserva, actualiza la lista de reservas
- * para reflejar el nuevo estado.
+ * Antes de cancelar le pide confirmación al usuario. Si responde que no,
+ * la reserva queda igual. Después de cancelar la reserva, actualiza la
+ * lista de reservas para reflejar el nuevo estado.
  *
  * @param id - Identificador de la reserva que se desea cancelar.
  */
 async function handleCancel(id: string) {
+  if (!window.confirm('¿Seguro que quieres cancelar esta reserva?')) return
+
   try {
     await cancelReservation(id)
     toast.success('Reserva cancelada')
@@ -260,8 +255,15 @@ function getMosaicClass(index: number): string {
       <!-- Empty state -->
       <div v-else-if="filteredReservations.length === 0" class="text-center py-16">
         <CalendarDays class="w-10 h-10 mx-auto mb-3 text-gray-300" />
-        <p class="font-medium text-gray-500">No hay reservas para mostrar</p>
+        <p class="font-medium text-gray-500">{{ emptyMessage }}</p>
         <p class="text-sm text-gray-400 mt-1">Tus reservas aparecerán aquí cuando realices una</p>
+        <RouterLink
+          to="/dashboard"
+          class="inline-flex items-center gap-1.5 mt-4 px-4 py-2 text-sm font-medium bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition-colors"
+        >
+          <CalendarDays class="w-4 h-4" />
+          Reservar un escritorio
+        </RouterLink>
       </div>
 
       <!-- Reservations mosaic -->
